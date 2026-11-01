@@ -318,7 +318,7 @@ table.inv tbody th { width: 34%; }
   </section>
 
   <section id="pos-venda" data-view="termos">
-    <div class="head"><h2>Pós-venda, garantia, peças e suporte técnico</h2><p>Pulverizador parado em plena aplicação é o maior risco para a reputação da parceria.</p></div>
+    <div class="head"><h2>Pós-venda, garantia, peças e suporte técnico</h2></div>
     <div class="flow">
       <div class="step"><b>Select · 1º nível</b><span>Atende, diagnostica e resolve o que estiver ao seu alcance</span></div>
       <span class="arrow" aria-hidden="true">→</span>
@@ -401,7 +401,7 @@ put('com', [
   ['Retenções','Apenas as previstas em lei, listadas por escrito e validadas com a Dimarp.'],
   ['Venda com outro revendedor','Divisão da comissão acordada por escrito antes da proposta; cada empresa emite sua própria NFS-e.'],
 ].map(([t,p]) => `<article class="block"><div class="top"><h3>${t}</h3>${statusPill('Definido')}</div><p>${esc(p)}</p></article>`).join(''));
-const rowsCard = (id, rows) => put(id, rows.map(([t,p]) => `<tr><th scope="row">${t}</th><td>${esc(p)}</td><td>${statusPill('A definir')}</td></tr>`).join(''));
+const rowsCard = (id, rows, st = 'A definir') => put(id, rows.map(([t,p]) => `<tr><th scope="row">${t}</th><td>${esc(p)}</td><td>${statusPill(st)}</td></tr>`).join(''));
 rowsCard('ped', [
   ['Confirmação do pedido','KS confirma número do pedido e data em até 2 dias úteis.'],
   ['Prazo de fabricação','Prazo por modelo e por época do ano (safra x entressafra).'],
@@ -417,7 +417,7 @@ rowsCard('pos', [
   ['Mão de obra em garantia','KS paga a Select por hora técnica conforme tabela.'],
   ['Deslocamento em garantia','Por conta da KS.'],
   ['Estoque de peças na Select','Kit inicial de peças de giro (consignado ou com desconto).'],
-]);
+], 'Definido');
 const demoRows = [
   ['Forma de cessão','Comodato ou consignação, com nota de remessa para demonstração.','KS'],
   ['Prazo de permanência','Prazo definido pela KS, formalizado por e-mail.','KS'],
@@ -431,9 +431,9 @@ const who = w => `<span class="tag${w === 'KS' ? ' ks' : w === 'Compartilhado' ?
 put('demo', demoRows.map(([t,p,w]) => `<tr><th scope="row">${t}</th><td>${esc(p)}</td><td>${who(w)}</td><td>${statusPill('Definido')}</td></tr>`).join(''));
 
 const calMonths = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const calExtra = { 0: [['mkt','Marketing digital']], 1: [['expo','Exposição cidade 1']] };
+const calExtra = { 1: [['expo','Exposição cidade 1']] };
 put('cal', calMonths.map((m, i) => {
-  const acts = [...(calExtra[i] || []), ['demo','Demonstração cidade 1'], ['demo','Demonstração cidade 2'], ['demo','Demonstração cidade 3']];
+  const acts = [['mkt','Marketing digital'], ['demo','Demonstração'], ...(calExtra[i] || [])];
   return `<article class="month"><h3>${m}</h3><ul>${acts.map(([c,t]) => `<li class="act ${c}">${t}</li>`).join('')}</ul></article>`;
 }).join(''));
 
