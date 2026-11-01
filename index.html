@@ -25,6 +25,8 @@
   --pill-wait-fg: #8a4a12;
   --pill-neg-bg: #e3edf8;
   --pill-neg-fg: #1f4f86;
+  --ks-bg: #fbefb3;
+  --ks-fg: #6b5400;
   --font-display: "Saira", "Arial Narrow", Arial, sans-serif;
   --font-body: "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
 }
@@ -34,6 +36,7 @@
     --fg: #e5ece7; --muted: #a2b2a8; --green: #7fb495; --green-dark: #9ccbb0;
     --orange: #f08353; --on-green: #10180f;
     --pill-wait-bg: #3a2a18; --pill-wait-fg: #f2c08c; --pill-neg-bg: #1b2b40; --pill-neg-fg: #a9c9f0;
+    --ks-bg: #3a3214; --ks-fg: #f1d66e;
     color-scheme: dark;
   }
 }
@@ -42,6 +45,7 @@
   --fg: #e5ece7; --muted: #a2b2a8; --green: #7fb495; --green-dark: #9ccbb0;
   --orange: #f08353; --on-green: #10180f;
   --pill-wait-bg: #3a2a18; --pill-wait-fg: #f2c08c; --pill-neg-bg: #1b2b40; --pill-neg-fg: #a9c9f0;
+    --ks-bg: #3a3214; --ks-fg: #f1d66e;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -97,7 +101,7 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { font-family: var(--font-display); font-weight: 600; font-size: 14px; padding: 5px 14px; border-radius: 999px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.4); }
 .tag { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--tint); color: var(--green-dark); white-space: nowrap; }
-.tag.ks { background: var(--pill-neg-bg); color: var(--pill-neg-fg); }
+.tag.ks { background: var(--ks-bg); color: var(--ks-fg); }
 .tag.both { background: var(--line); color: var(--fg); }
 
 /* Overview */
@@ -243,13 +247,13 @@ table.inv tbody th { width: 34%; }
     <h1>Plano Diretor da Parceria</h1>
     <p class="purpose">Definir o que cabe à Select e à KS para vender e atender bem o produtor do território.</p>
     <div class="actions">
-      <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
-        Produtos KS
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 4h9v9M16 4 5 15"/></svg>
-      </a>
       <a class="btn" href="#planejamento">
         Planejamento
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
+      </a>
+      <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
+        Produtos KS
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 4h9v9M16 4 5 15"/></svg>
       </a>
       <a class="btn" href="#termos">
         Termos
@@ -271,7 +275,7 @@ table.inv tbody th { width: 34%; }
   </section>
 
   <section id="metas" data-view="main">
-    <div class="head"><h2>Metas e indicadores</h2><p>Funil de vendas de janeiro a dezembro: 3 demonstrações e 1 proposta por mês, e 1 venda a cada bimestre.</p></div>
+    <div class="head"><h2>Metas e indicadores</h2></div>
     <div class="block funnel-card" id="met"></div>
   </section>
 
@@ -290,14 +294,14 @@ table.inv tbody th { width: 34%; }
   </header>
 
   <section id="papeis" data-view="termos">
-    <div class="head"><h2>Papéis e Responsabilidades</h2><p>Cada bloco é um tema da parceria, com o que cabe a cada empresa e o status do acordo.</p></div>
+    <div class="head"><h2>Papéis e Responsabilidades</h2></div>
     <div class="grid two" id="roles"></div>
   </section>
 
   <section id="representacao" data-view="termos">
     <div class="head"><h2>Representação e Região</h2></div>
     <div class="callout">
-      <p>Nos municípios abaixo, a Select terá exclusividade na venda dos pulverizadores KS e dos demais produtos da marca.</p>
+      <p>A Select terá exclusividade na venda dos pulverizadores KS e dos demais produtos da marca nestes municípios.</p>
       <div class="chips"><span class="chip">Altamira do Paraná</span><span class="chip">Bandeirantes</span><span class="chip">Bela Vista do Piquiri</span><span class="chip">Campina da Lagoa</span><span class="chip">Goioerê</span><span class="chip">Janiópolis</span><span class="chip">Juranda</span><span class="chip">Mariluz</span><span class="chip">Moreira Sales</span><span class="chip">Nova Cantu</span><span class="chip">Perobal</span><span class="chip">Primavera</span><span class="chip">Quarto Centenário</span><span class="chip">Rancho Alegre D'Oeste</span><span class="chip">Sales de Oliveira</span><span class="chip">Ubiratã</span></div>
     </div>
     <div class="grid" id="rep"></div>
@@ -399,7 +403,6 @@ put('com', [
 ].map(([t,p]) => `<article class="block"><div class="top"><h3>${t}</h3>${statusPill('Definido')}</div><p>${esc(p)}</p></article>`).join(''));
 const rowsCard = (id, rows) => put(id, rows.map(([t,p]) => `<tr><th scope="row">${t}</th><td>${esc(p)}</td><td>${statusPill('A definir')}</td></tr>`).join(''));
 rowsCard('ped', [
-  ['Como fazer o pedido','Formulário padrão com modelo, opcionais, cliente e forma de pagamento.'],
   ['Confirmação do pedido','KS confirma número do pedido e data em até 2 dias úteis.'],
   ['Prazo de fabricação','Prazo por modelo e por época do ano (safra x entressafra).'],
   ['Aviso de atraso','KS avisa assim que souber, com nova data.'],
@@ -458,9 +461,9 @@ const metaRow = n => months.map(() => `<td>${n}</td>`).join('');
 const saleMeta = [0,2,4,6,8,10].map(() => '<td colspan="2" class="bim">1</td>').join('');
 const funnelDone = arr => { const t = total(arr); return `<em>Realizado: ${t}</em>`; };
 put('met', `
-  <div class="funnel" aria-label="Funil anual: 36 demonstrações, 12 propostas, 6 vendas">
-    <div class="stage s1"><b>36</b><span>Demonstrações</span>${funnelDone(realizado.demonstracoes)}</div>
-    <div class="rate">33% viram proposta</div>
+  <div class="funnel" aria-label="Funil anual: 24 demonstrações, 12 propostas, 6 vendas">
+    <div class="stage s1"><b>24</b><span>Demonstrações</span>${funnelDone(realizado.demonstracoes)}</div>
+    <div class="rate">50% viram proposta</div>
     <div class="stage s2"><b>12</b><span>Propostas</span>${funnelDone(realizado.propostas)}</div>
     <div class="rate">50% viram venda</div>
     <div class="stage s3"><b>6</b><span>Vendas</span>${funnelDone(realizado.vendas)}</div>
@@ -469,7 +472,7 @@ put('met', `
     <table>
       <thead><tr><th scope="col">Indicador</th><th scope="col"></th>${months.map(m => `<th scope="col">${m}</th>`).join('')}<th scope="col">Ano</th></tr></thead>
       <tbody>
-        <tr class="r1"><th scope="rowgroup" rowspan="2">Demonstrações</th><td class="lbl">Meta</td>${metaRow(3)}<td class="tot">36</td></tr>
+        <tr class="r1"><th scope="rowgroup" rowspan="2">Demonstrações</th><td class="lbl">Meta</td>${metaRow(2)}<td class="tot">24</td></tr>
         <tr class="r1 real"><td class="lbl">Realizado</td>${doneRow(realizado.demonstracoes)}</tr>
         <tr class="r2"><th scope="rowgroup" rowspan="2">Propostas</th><td class="lbl">Meta</td>${metaRow(1)}<td class="tot">12</td></tr>
         <tr class="r2 real"><td class="lbl">Realizado</td>${doneRow(realizado.propostas)}</tr>
