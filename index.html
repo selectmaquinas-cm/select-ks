@@ -156,6 +156,10 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; display: flex; flex-direction: column; gap: 2px; border-top: 4px solid var(--green); }
 .kpi b { font-family: var(--font-display); font-size: 32px; line-height: 1.1; color: var(--green-dark); font-variant-numeric: tabular-nums; }
 .kpi span { color: var(--muted); font-size: 14px; }
+.kpis.compact { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.kpis.compact .kpi { padding: 10px 14px; border-top-width: 3px; }
+.kpis.compact .kpi b { font-size: 22px; }
+.kpis.compact .kpi span { font-size: 12.5px; }
 .kpi.mkt { border-top-color: var(--orange); } .kpi.expo { border-top-color: var(--ks-fg); }
 .tl-card { padding: 20px; }
 .tl-scroll { overflow-x: auto; }
@@ -487,14 +491,14 @@ table.inv tbody th { width: 34%; }
   </header>
 
   <section id="estrategico" data-view="estrategico">
-    <div class="kpis" id="kpis"></div>
+    <div class="kpis compact" id="kpis"></div>
     <div class="block map-card">
       <div class="map-side">
         <div class="map-tools">
           <div class="legend">
             <span class="key k-terr">Território</span>
-            <span class="key k-cm">Campo Mourão · Select</span>
-            <span class="key k-ac">Assis Chateaubriand · KS</span>
+            <span class="key k-cm">Campo Mourão</span>
+            <span class="key k-ac">Assis Chateaubriand</span>
           </div>
           <div class="seg" role="group" aria-label="Enquadramento do mapa">
             <button type="button" id="zoom-region" class="on">Região</button>
@@ -513,8 +517,6 @@ table.inv tbody th { width: 34%; }
         </table>
       </div>
     </div>
-    <p class="note">Não localizados como municípios do Paraná: Bela Vista do Piquiri, Primavera e Sales de Oliveira. Confirme esses nomes para ajustar o mapa.</p>
-    <p class="note">Fontes: IBGE, Censo Demográfico 2022 (população) e malha municipal do IBGE (área e posição). Distâncias em linha reta entre os centros dos municípios.</p>
   </section>
 
   <footer class="foot">
@@ -654,7 +656,7 @@ const fmt = n => n.toLocaleString('pt-BR');
 const kindLabel = { terr: 'Território', cm: 'Campo Mourão · Select', ac: 'Assis Chateaubriand · KS' };
 const kindTag = { terr: '<span class="tag cp-tag">Território</span>', cm: '<span class="tag cm cp-tag">Base da Select</span>', ac: '<span class="tag ks cp-tag">Sede da KS</span>' };
 const terrCities = MAP.cities.filter(c => c.kind === 'terr');
-put('kpis', kpi(terrCities.length, 'municípios no mapa do território') +
+put('kpis', kpi(terrCities.length, 'municípios') +
   kpi(fmt(terrCities.reduce((a, c) => a + c.pop, 0)), 'habitantes no território (Censo 2022)') +
   kpi(fmt(terrCities.reduce((a, c) => a + c.area, 0)) + ' km²', 'de área no território'));
 const svg = document.getElementById('pr-map');
