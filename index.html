@@ -197,7 +197,8 @@ section { display: flex; flex-direction: column; gap: 20px; }
 #pr-map .city.sel { stroke: var(--fg); stroke-width: 2.6; }
 #pr-map .city:focus { outline: none; }
 #pr-map .city:focus-visible { stroke: var(--orange); stroke-width: 3; }
-#pr-map text { font-family: var(--font-display); font-weight: 600; fill: var(--fg); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+#pr-map text { font-family: var(--font-display); font-weight: 600; fill: #17231c; pointer-events: none; }
+#pr-map text.on { font-weight: 700; }
 .city-panel { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .city-panel h3 { font-size: 22px; font-weight: 700; color: var(--green-dark); }
 .cp-tag { align-self: flex-start; }
@@ -664,10 +665,14 @@ svg.innerHTML = `<path class="other" d="${MAP.others}" vector-effect="non-scalin
   `<g id="map-labels"></g>`;
 const labels = svg.querySelector('#map-labels');
 let vb = MAP.region;
+const shortName = {
+  'Altamira do Paraná': 'Altamira', 'Campina da Lagoa': 'C. da Lagoa', 'Rancho Alegre D\'Oeste': 'R. Alegre',
+  'Quarto Centenário': 'Q. Centenário', 'Moreira Sales': 'M. Sales', 'Nova Cantu': 'N. Cantu',
+  'Assis Chateaubriand': 'Assis Chateaubriand', 'Campo Mourão': 'Campo Mourão'
+};
 const drawLabels = sel => {
-  const fs = vb[2] / 760 * 15;
-  const show = MAP.cities.filter(c => c.kind !== 'terr' || c.id === sel);
-  labels.innerHTML = show.map(c => `<text x="${c.x}" y="${c.y}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}">${c.name}</text>`).join('');
+  const fs = vb[2] / 760 * (vb === MAP.region ? 11 : 7.5);
+  labels.innerHTML = MAP.cities.map(c => `<text class="${c.id === sel ? 'on' : ''}" x="${c.x}" y="${c.y}" text-anchor="middle" dominant-baseline="middle" font-size="${c.id === sel ? fs * 1.15 : fs}">${shortName[c.name] || c.name}</text>`).join('');
 };
 const setView = (box, btn) => {
   vb = box; svg.setAttribute('viewBox', box.join(' '));
@@ -675,7 +680,7 @@ const setView = (box, btn) => {
   drawLabels(current);
 };
 let current = MAP.cities.find(c => c.kind === 'cm').id;
-const rowsHtml = () => [...MAP.cities].sort((a, b) => a.dCM - b.dCM).map(c => `<tr data-id="${c.id}" class="${c.id === current ? 'sel' : ''}"><th scope="row">${c.name}</th><td>${fmt(c.pop)}</td><td>${fmt(c.area)} km²</td><td>${c.dCM ? c.dCM + ' km' : '—'}</td><td>${c.dAC ? c.dAC + ' km' : '—'}</td></tr>`).join('');
+const rowsHtml = () => MAP.cities.filter(c => c.kind === 'terr').sort((a, b) => a.dCM - b.dCM).map(c => `<tr data-id="${c.id}" class="${c.id === current ? 'sel' : ''}"><th scope="row">${c.name}</th><td>${fmt(c.pop)}</td><td>${fmt(c.area)} km²</td><td>${c.dCM ? c.dCM + ' km' : '—'}</td><td>${c.dAC ? c.dAC + ' km' : '—'}</td></tr>`).join('');
 const select = id => {
   current = id;
   const c = MAP.cities.find(x => x.id === id);
@@ -692,13 +697,7 @@ const select = id => {
       <div class="stat"><span>Microrregião</span><b>${c.micro}</b></div>
       <div class="stat"><span>Até Campo Mourão</span><b>${c.dCM ? c.dCM + ' km' : 'É a base'}</b></div>
       <div class="stat"><span>Até Assis Chateaubriand</span><b>${c.dAC ? c.dAC + ' km' : 'É a sede'}</b></div>
-    </div>
-    <div class="cp-sub">Indicadores rurais</div>
-    <ul class="fill-list">
-      <li><span>Produtores (estabelecimentos agropecuários)</span><em>a preencher</em></li>
-      <li><span>Principais culturas</span><em>a preencher</em></li>
-      <li><span>Área de lavoura</span><em>a preencher</em></li>
-    </ul>`;
+    </div>`;
 };
 svg.addEventListener('click', e => { const p = e.target.closest('.city'); if (p) select(p.dataset.id); });
 svg.addEventListener('keydown', e => { const p = e.target.closest('.city'); if (p && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); select(p.dataset.id); } });
