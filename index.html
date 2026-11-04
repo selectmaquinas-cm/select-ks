@@ -80,6 +80,8 @@ p { margin: 0; }
   padding: 12px 22px; border-radius: 999px; transition: background .15s;
 }
 .btn:hover { background: var(--green-dark); }
+.btn.current { background: transparent; color: var(--green-dark); box-shadow: inset 0 0 0 2px var(--green); }
+.btn.current:hover { background: var(--tint); }
 .btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
 .btn svg { width: 18px; height: 18px; }
 
@@ -287,10 +289,24 @@ table.inv tbody th { width: 34%; }
     </div>
     <h1>Termos da Parceria</h1>
     <p>Papéis, regras comerciais e compromissos de cada empresa.</p>
-    <a class="btn" href="#plano">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 10H4M9 5l-5 5 5 5"/></svg>
-      Voltar ao Plano Diretor
-    </a>
+    <div class="actions">
+      <a class="btn" href="#plano">
+        Metas
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h14M6 14V9M10 14V5M14 14v-7"/></svg>
+      </a>
+      <a class="btn" href="#planejamento">
+        Planejamento
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
+      </a>
+      <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
+        Produtos KS
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 4h9v9M16 4 5 15"/></svg>
+      </a>
+      <a class="btn current" href="#termos" aria-current="page">
+        Termos
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5z"/><path d="M8 9h5M8 12h5M8 15h3"/></svg>
+      </a>
+    </div>
   </header>
 
   <section id="papeis" data-view="termos">
@@ -301,7 +317,7 @@ table.inv tbody th { width: 34%; }
   <section id="representacao" data-view="termos">
     <div class="head"><h2>Representação e Região</h2></div>
     <div class="callout">
-      <p>A Select terá exclusividade na venda dos pulverizadores KS e dos demais produtos da marca nestes municípios.</p>
+      <p>A Select terá exclusividade na venda dos pulverizadores autopropelidos KS nestes municípios. Os demais produtos da KS também podem ser comercializados pela Select, sem exclusividade.</p>
       <div class="chips"><span class="chip">Altamira do Paraná</span><span class="chip">Bandeirantes</span><span class="chip">Bela Vista do Piquiri</span><span class="chip">Campina da Lagoa</span><span class="chip">Goioerê</span><span class="chip">Janiópolis</span><span class="chip">Juranda</span><span class="chip">Mariluz</span><span class="chip">Moreira Sales</span><span class="chip">Nova Cantu</span><span class="chip">Perobal</span><span class="chip">Primavera</span><span class="chip">Quarto Centenário</span><span class="chip">Rancho Alegre D'Oeste</span><span class="chip">Sales de Oliveira</span><span class="chip">Ubiratã</span></div>
     </div>
     <div class="grid" id="rep"></div>
@@ -346,10 +362,24 @@ table.inv tbody th { width: 34%; }
     </div>
     <h1>Planejamento</h1>
     <p>Calendário de atividades da parceria, de janeiro a dezembro.</p>
-    <a class="btn" href="#plano">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 10H4M9 5l-5 5 5 5"/></svg>
-      Voltar ao Plano Diretor
-    </a>
+    <div class="actions">
+      <a class="btn" href="#plano">
+        Metas
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h14M6 14V9M10 14V5M14 14v-7"/></svg>
+      </a>
+      <a class="btn current" href="#planejamento" aria-current="page">
+        Planejamento
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
+      </a>
+      <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
+        Produtos KS
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 4h9v9M16 4 5 15"/></svg>
+      </a>
+      <a class="btn" href="#termos">
+        Termos
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5z"/><path d="M8 9h5M8 12h5M8 15h3"/></svg>
+      </a>
+    </div>
   </header>
 
   <section id="planejamento" data-view="planejamento">
@@ -381,9 +411,8 @@ const roles = [
   ['Suporte técnico','Atendimento de 1º nível com técnico treinado','Treinar a equipe da Select e dar suporte de 2º nível','A definir'],
   ['Máquinas de demonstração','Guardar, conservar, acompanhar a demonstração e registrar o uso','Ceder a máquina, realizar a demonstração a campo e definir seguro e regras de venda','A definir'],
   ['Marketing e leads','Divulgação regional (Instagram, site, anúncios)','Material oficial, uso da marca e repasse de leads da região','A definir'],
-  ['Cadastro da revenda','Enviar ficha cadastral e documentos da Select','Aprovar cadastro e emitir carta de representação','Em negociação'],
 ];
-put('roles', roles.map(([t,s,k]) => `<article class="block role"><div class="top"><h3>${t}</h3>${statusPill('Definido')}</div><div class="sides"><div class="side"><b>Select</b><span>${esc(s)}</span></div><div class="side"><b>KS</b><span>${esc(k)}</span></div></div></article>`).join(''));
+put('roles', roles.map(([t,s,k]) => `<article class="block role"><div class="top"><h3>${t}</h3>${statusPill(t === 'Faturamento e comissão' ? 'A definir' : 'Definido')}</div><div class="sides"><div class="side"><b>Select</b><span>${esc(s)}</span></div><div class="side"><b>KS</b><span>${esc(k)}</span></div></div></article>`).join(''));
 
 const simple = (id, rows) => put(id, rows.map(([t,p,open]) => `<article class="block">${open ? `<div class="top"><h3>${t}</h3>${statusPill('A definir')}</div>` : `<h3>${t}</h3>`}<p>${esc(p)}</p></article>`).join(''));
 const proposal = (id, rows) => put(id, rows.map(([t,p]) => `<article class="block"><div class="top"><h3>${t}</h3>${statusPill('A definir')}</div><p>${esc(p)}</p></article>`).join(''));
@@ -397,16 +426,15 @@ simple('rep', [
 ]);
 put('com', [
   ['Preços','A KS envia a tabela vigente e avisa reajustes com 30 dias de antecedência, junto com a faixa de desconto que a Select pode conceder sem consulta.'],
-  ['Comissão','Percentual e prazo de pagamento.'],
-  ['Retenções','Apenas as previstas em lei, listadas por escrito e validadas com a Dimarp.'],
+  ['Comissão','Diferença entre o valor de venda e o preço mínimo definido pela KS.'],
   ['Venda com outro revendedor','Divisão da comissão acordada por escrito antes da proposta; cada empresa emite sua própria NFS-e.'],
 ].map(([t,p]) => `<article class="block"><div class="top"><h3>${t}</h3>${statusPill('Definido')}</div><p>${esc(p)}</p></article>`).join(''));
-const rowsCard = (id, rows, st = 'A definir') => put(id, rows.map(([t,p]) => `<tr><th scope="row">${t}</th><td>${esc(p)}</td><td>${statusPill(st)}</td></tr>`).join(''));
+const rowsCard = (id, rows, st = 'A definir') => put(id, rows.map(([t,p,s]) => `<tr><th scope="row">${t}</th><td>${esc(p)}</td><td>${statusPill(s || st)}</td></tr>`).join(''));
 rowsCard('ped', [
-  ['Confirmação do pedido','KS confirma número do pedido e data em até 2 dias úteis.'],
   ['Prazo de fabricação','Prazo por modelo e por época do ano (safra x entressafra).'],
   ['Aviso de atraso','KS avisa assim que souber, com nova data.'],
-  ['Frete até o cliente','Definir quem contrata e quem paga.'],
+  ['Frete até o cliente','Entregue pela fábrica na propriedade do cliente.','Definido'],
+  ['Pedido com financiamento','O pedido fica pendente até a aprovação do financiamento do cliente.','Definido'],
   ['Reserva de máquina em estoque','Prazo de reserva para cliente da Select.'],
   ['Cancelamento de pedido','Regras e eventual multa.'],
 ]);
@@ -421,19 +449,17 @@ rowsCard('pos', [
 const demoRows = [
   ['Forma de cessão','Comodato ou consignação, com nota de remessa para demonstração.','KS'],
   ['Prazo de permanência','Prazo definido pela KS, formalizado por e-mail.','KS'],
-  ['Combustível, defensivo e operador','Por conta da Select nas demonstrações.','Select'],
+  ['Transporte','Transporte da máquina de demonstração por conta da KS.','KS'],
   ['Desgaste e manutenção','Revisões pela KS; danos por mau uso pela Select.','Compartilhado'],
-  ['Venda da máquina de demonstração','Preço com desconto por horas de uso e comissão normal à Select.','KS'],
-  ['Controle de uso','Registro de horas e demonstrações realizadas.','Select'],
 ];
 
 const who = w => `<span class="tag${w === 'KS' ? ' ks' : w === 'Compartilhado' ? ' both' : ''}">${w}</span>`;
 put('demo', demoRows.map(([t,p,w]) => `<tr><th scope="row">${t}</th><td>${esc(p)}</td><td>${who(w)}</td><td>${statusPill('Definido')}</td></tr>`).join(''));
 
 const calMonths = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const calExtra = { 1: [['expo','Exposição cidade 1']] };
+const expoMonths = [1, 4, 7, 10]; // fevereiro, maio, agosto e novembro (a cada 3 meses)
 put('cal', calMonths.map((m, i) => {
-  const acts = [['mkt','Marketing digital'], ['demo','Demonstração'], ...(calExtra[i] || [])];
+  const acts = [['mkt','Marketing digital'], ...(i <= 9 ? [['demo','Demonstração']] : []), ...(expoMonths.includes(i) ? [['expo','Exposição em cidade']] : [])];
   return `<article class="month"><h3>${m}</h3><ul>${acts.map(([c,t]) => `<li class="act ${c}">${t}</li>`).join('')}</ul></article>`;
 }).join(''));
 
@@ -461,10 +487,10 @@ const metaRow = n => months.map(() => `<td>${n}</td>`).join('');
 const saleMeta = [0,2,4,6,8,10].map(() => '<td colspan="2" class="bim">1</td>').join('');
 const funnelDone = arr => { const t = total(arr); return `<em>Realizado: ${t}</em>`; };
 put('met', `
-  <div class="funnel" aria-label="Funil anual: 24 demonstrações, 12 propostas, 6 vendas">
-    <div class="stage s1"><b>24</b><span>Demonstrações</span>${funnelDone(realizado.demonstracoes)}</div>
-    <div class="rate">50% viram proposta</div>
-    <div class="stage s2"><b>12</b><span>Propostas</span>${funnelDone(realizado.propostas)}</div>
+  <div class="funnel" aria-label="Funil anual: 24 propostas, 12 demonstrações, 6 vendas">
+    <div class="stage s1"><b>24</b><span>Propostas</span>${funnelDone(realizado.propostas)}</div>
+    <div class="rate">50% viram demonstração</div>
+    <div class="stage s2"><b>12</b><span>Demonstrações</span>${funnelDone(realizado.demonstracoes)}</div>
     <div class="rate">50% viram venda</div>
     <div class="stage s3"><b>6</b><span>Vendas</span>${funnelDone(realizado.vendas)}</div>
   </div>
@@ -472,10 +498,10 @@ put('met', `
     <table>
       <thead><tr><th scope="col">Indicador</th><th scope="col"></th>${months.map(m => `<th scope="col">${m}</th>`).join('')}<th scope="col">Ano</th></tr></thead>
       <tbody>
-        <tr class="r1"><th scope="rowgroup" rowspan="2">Demonstrações</th><td class="lbl">Meta</td>${metaRow(2)}<td class="tot">24</td></tr>
-        <tr class="r1 real"><td class="lbl">Realizado</td>${doneRow(realizado.demonstracoes)}</tr>
-        <tr class="r2"><th scope="rowgroup" rowspan="2">Propostas</th><td class="lbl">Meta</td>${metaRow(1)}<td class="tot">12</td></tr>
-        <tr class="r2 real"><td class="lbl">Realizado</td>${doneRow(realizado.propostas)}</tr>
+        <tr class="r1"><th scope="rowgroup" rowspan="2">Propostas</th><td class="lbl">Meta</td>${metaRow(2)}<td class="tot">24</td></tr>
+        <tr class="r1 real"><td class="lbl">Realizado</td>${doneRow(realizado.propostas)}</tr>
+        <tr class="r2"><th scope="rowgroup" rowspan="2">Demonstrações</th><td class="lbl">Meta</td>${metaRow(1)}<td class="tot">12</td></tr>
+        <tr class="r2 real"><td class="lbl">Realizado</td>${doneRow(realizado.demonstracoes)}</tr>
         <tr class="r3"><th scope="rowgroup" rowspan="2">Vendas</th><td class="lbl">Meta</td>${saleMeta}<td class="tot">6</td></tr>
         <tr class="r3 real"><td class="lbl">Realizado</td>${doneRow(realizado.vendas)}</tr>
       </tbody>
