@@ -161,20 +161,22 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .kpis.compact .kpi b { font-size: 22px; }
 .kpis.compact .kpi span { font-size: 12.5px; }
 .kpi.mkt { border-top-color: var(--orange); } .kpi.expo { border-top-color: var(--ks-fg); }
-.tl-card { padding: 20px; }
-.tl-scroll { overflow-x: auto; }
-.tl { display: grid; grid-template-columns: 190px repeat(12, minmax(44px, 1fr)); gap: 6px 4px; align-items: center; min-width: 760px; }
-.tl-q { font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: center; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
-.tl-m { font-family: var(--font-display); font-weight: 600; font-size: 13px; text-align: center; color: var(--green-dark); background: var(--tint); border-radius: 6px; padding: 6px 0; }
-.tl-label { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; color: var(--fg); font-size: 15px; padding: 14px 0; }
-.dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.quarters { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.quarter { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.quarter header { background: var(--green); color: var(--on-green); padding: 12px 16px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.quarter header b { font-family: var(--font-display); font-size: 17px; }
+.quarter header span { font-size: 13px; opacity: .85; }
+.qmonth { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); }
+.qmonth:first-of-type { border-top: 0; }
+.qm-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--green-dark); }
+.qm-acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.chipx { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--tint); color: var(--fg); }
+.chipx.mkt { background: color-mix(in srgb, var(--orange) 14%, var(--surface)); }
+.chipx.expo { background: var(--ks-bg); }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
 .dot.mkt { background: var(--orange); } .dot.demo { background: var(--green); } .dot.expo { background: var(--ks-fg); }
-.tl-row { padding: 6px 0; }
-.bar.mkt { background: color-mix(in srgb, var(--orange) 18%, var(--surface)); border: 1.5px solid var(--orange); border-radius: 999px; padding: 8px 14px; font-size: 13px; color: var(--fg); text-align: center; }
-.tl-cell { display: flex; justify-content: center; padding: 6px 0; border-left: 1px dashed var(--line); min-height: 44px; align-items: center; }
-.mark { display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 999px; font-weight: 600; font-size: 13px; }
-.mark.demo { background: var(--green); color: var(--on-green); }
-.mark.expo { background: var(--ks-bg); color: var(--ks-fg); border: 1.5px solid var(--ks-fg); }
+@media (max-width: 960px) { .quarters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .quarters { grid-template-columns: 1fr; } }
 
 /* Strategic map */
 .map-card { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 22px; padding: 20px; }
@@ -455,8 +457,8 @@ table.inv tbody th { width: 34%; }
   </header>
 
   <section id="planejamento" data-view="planejamento">
-    <div class="kpis" id="plan-kpis"></div>
-    <div class="block tl-card"><div class="tl-scroll"><div class="tl" id="timeline"></div></div></div>
+    <div class="kpis compact" id="plan-kpis"></div>
+    <div class="quarters" id="quarters"></div>
   </section>
 
   <header class="plan-mast" data-view="estrategico">
@@ -594,17 +596,18 @@ const expoMonths = [1, 4, 7, 10]; // fevereiro, maio, agosto e novembro (a cada 
 const demoMonths = [0,1,2,3,4,5,6,7,8,9]; // janeiro a outubro
 const kpi = (n, l, c) => `<div class="kpi ${c || ''}"><b>${n}</b><span>${l}</span></div>`;
 put('plan-kpis', kpi(12, 'meses de marketing digital', 'mkt') + kpi(demoMonths.length, 'demonstrações no ano', 'demo') + kpi(expoMonths.length, 'exposições em cidades', 'expo'));
-const quarters = ['1º trimestre','2º trimestre','3º trimestre','4º trimestre'];
-put('timeline', `
-  <div class="tl-corner"></div>${quarters.map((q, i) => `<div class="tl-q" style="grid-column:${2 + i * 3} / span 3">${q}</div>`).join('')}
-  <div class="tl-corner"></div>${calMonths.map(m => `<div class="tl-m">${m}</div>`).join('')}
-  <div class="tl-label"><i class="dot mkt"></i>Marketing digital</div>
-  <div class="tl-row" style="grid-column:2 / span 12"><div class="bar mkt">Todos os meses</div></div>
-  <div class="tl-label"><i class="dot demo"></i>Demonstração</div>
-  ${calMonths.map((m, i) => `<div class="tl-cell">${demoMonths.includes(i) ? '<span class="mark demo" title="Demonstração">1</span>' : ''}</div>`).join('')}
-  <div class="tl-label"><i class="dot expo"></i>Exposição em cidade</div>
-  ${calMonths.map((m, i) => `<div class="tl-cell">${expoMonths.includes(i) ? '<span class="mark expo" title="Exposição em cidade">Expo</span>' : ''}</div>`).join('')}
-`);
+const fullMonths = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const qNames = ['1º trimestre','2º trimestre','3º trimestre','4º trimestre'];
+const chip = (c, t) => `<span class="chipx ${c}"><i class="dot ${c}"></i>${t}</span>`;
+put('quarters', qNames.map((q, qi) => `
+  <article class="quarter">
+    <header><b>${q}</b><span>${calMonths[qi * 3]} a ${calMonths[qi * 3 + 2]}</span></header>
+    ${[0, 1, 2].map(k => { const i = qi * 3 + k; return `
+    <div class="qmonth">
+      <div class="qm-name">${fullMonths[i]}</div>
+      <div class="qm-acts">${chip('mkt', 'Marketing digital')}${demoMonths.includes(i) ? chip('demo', 'Demonstração') : ''}${expoMonths.includes(i) ? chip('expo', 'Exposição em cidade') : ''}</div>
+    </div>`; }).join('')}
+  </article>`).join(''));
 
 put('inv', [
   ['Treinamento de vendedor','KS','Select arca com o deslocamento.'],
