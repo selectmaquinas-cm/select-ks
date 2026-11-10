@@ -868,7 +868,7 @@ const STAGES = [
   { k: 'contato', n: 'Primeiro contato', c: '#3f7cc4' },
   { k: 'visita', n: 'Visita', c: '#37634c' },
   { k: 'retorno', n: 'Retorno', c: '#c99a12' },
-  { k: 'venda', n: 'Venda', c: '#de5c28' },
+  { k: 'venda', n: 'Venda', c: '#2f9d55' },
   { k: 'desistencia', n: 'Desistência', c: '#8a8f8b' },
 ];
 const stageOf = k => STAGES.find(s => s.k === k) || STAGES[0];
@@ -991,7 +991,7 @@ async function openClient(id) {
     <div class="cp-sub">Mover para outra etapa</div>
     <div class="movers">${STAGES.filter(s => s.k !== c.etapa).map(s => `<button type="button" class="mover" style="--c:${s.c}" data-move="${s.k}">${s.n}</button>`).join('')}</div>
     <div class="cp-sub">Anotações</div>
-    <div class="note-add"><label class="fld grow"><span class="sr">Nova anotação</span><textarea id="new-note" placeholder="Ex.: visita marcada para sexta, cliente quer proposta com o usado na troca"></textarea></label><button type="button" class="btn small" data-act="add-note">Adicionar anotação</button></div>
+    <div class="note-add"><label class="fld grow"><span class="sr">Nova anotação</span><textarea id="new-note" placeholder="Ex.: visita marcada para sexta, cliente quer proposta com o usado na troca"></textarea></label><button type="button" class="btn small" data-act="add-note">Adicionar</button></div>
     <ul class="notes">${(c.notas || []).slice().reverse().map(n => `<li><div><time>${br(n.data)}${n.hora ? ' ' + n.hora : ''}</time>${n.por ? `<span class="by">${esc(who2(n.por))}</span>` : ''}</div><p>${esc(n.texto)}</p><button type="button" class="link-del" data-del-note="${escA(n.id)}">Excluir</button></li>`).join('') || '<li class="note">Nenhuma anotação ainda.</li>'}</ul>
     <div class="cp-sub">Histórico de movimentações</div>
     <ul class="hist">${(c.historico || []).slice().reverse().map(hh => `<li><time>${br(hh.data)}${hh.hora ? ' ' + hh.hora : ''}</time><span>${hh.acao ? esc(hh.acao) : 'Movido para ' + esc(stageOf(hh.etapa).n)}${hh.nota ? ' · ' + esc(hh.nota) : ''}${hh.por ? ` <span class="by">por ${esc(who2(hh.por))}</span>` : ''}</span></li>`).join('') || '<li>—</li>'}</ul>
