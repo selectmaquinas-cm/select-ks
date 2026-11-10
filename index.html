@@ -244,7 +244,9 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .crm-stat:hover { border-color: var(--orange); }
 .crm-stat:focus-visible, .stage-card:focus-visible, .crm-table tbody tr:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .crm { display: flex; flex-direction: column; gap: 16px; }
-.crm-off { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; color: var(--muted); }
+.crm-off { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; color: var(--muted); display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.crm-off h3 { font-size: 19px; color: var(--green-dark); }
+.crm-off p { max-width: 65ch; }
 .crm-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
 .fld { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); min-width: 0; }
 .fld.grow { flex: 1 1 220px; }
@@ -1082,15 +1084,22 @@ async function safeWrite(fn) {
 }
 
 (async () => {
-  const off = msg => {
+  const off = (title, msg) => {
     document.getElementById('crm').hidden = true;
-    const o = document.getElementById('crm-off'); o.textContent = msg; o.hidden = false;
+    const o = document.getElementById('crm-off');
+    o.innerHTML = `<h3>${esc(title)}</h3><p>${esc(msg)}</p><a class="btn small" href="https://claude.ai/artifact/6dvH2jQsJuZGZ1wNtYbQrq#painel" target="_blank" rel="noopener">Abrir o painel no Claude</a>`;
+    o.hidden = false;
     document.querySelectorAll('.cp-sub').forEach(el => { if (el.textContent === 'Captação de clientes') el.hidden = true; });
     const cc = document.getElementById('crm-city'); if (cc) cc.hidden = true;
     crmDisabled = true;
   };
-  const db = window.claude && window.claude.use ? await window.claude.use('db') : null;
-  if (!db) { off('O painel de clientes funciona somente na versão privada do Plano Diretor, no Claude. Os dados de clientes não ficam nesta página pública.'); return; }
+  const inClaude = !!(window.claude && window.claude.use);
+  const db = inClaude ? await window.claude.use('db') : null;
+  if (!db) {
+    if (inClaude) off('Entre na sua conta do Claude', 'Os clientes só aparecem para quem está conectado ao Claude e foi convidado para este plano. Em uma janela anônima ou sem login, o painel fica bloqueado para proteger os dados.');
+    else off('Painel disponível só na versão privada', 'Esta é a página pública do plano. Os dados dos clientes ficam protegidos na versão do Claude, acessível apenas para quem tem login e convite.');
+    return;
+  }
   clientesCol = db.collection('clientes');
   userCap = await window.claude.use('user');
   if (userCap) { try { me = await userCap.id(); } catch (e) { me = null; } }
