@@ -161,6 +161,10 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .kpis.compact .kpi { padding: 10px 14px; border-top-width: 3px; }
 .kpis.compact .kpi b { font-size: 22px; }
 .kpis.compact .kpi span { font-size: 12.5px; }
+.kpi-go { cursor: pointer; text-align: left; font: inherit; background: var(--green); border-color: var(--green); border-top-color: var(--green-dark); }
+.kpi-go b, .kpi-go span { color: var(--on-green) !important; }
+.kpi-go:hover { background: var(--green-dark); }
+.kpi-go:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .kpi.mkt { border-top-color: var(--orange); } .kpi.expo { border-top-color: var(--ks-fg); }
 .quarters { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .quarter { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
@@ -231,7 +235,7 @@ section { display: flex; flex-direction: column; gap: 20px; }
 
 
 /* CRM */
-.crm-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.crm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .crm-stat { border: 1.5px solid var(--green); background: var(--surface); border-radius: 10px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; font: inherit; color: var(--fg); }
 .crm-stat b { font-family: var(--font-display); font-size: 20px; color: var(--green-dark); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .crm-stat span { font-size: 11.5px; color: var(--muted); }
@@ -293,7 +297,18 @@ button.btn { border: 0; cursor: pointer; }
 .form-grid .full { grid-column: 1 / -1; }
 .err { color: #b3361b; font-size: 13px; }
 @media (max-width: 860px) { .stage-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } .crm-charts { grid-template-columns: 1fr; } }
-@media (max-width: 520px) { .stage-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .form-grid, .dl { grid-template-columns: 1fr; } .crm-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .stage-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .form-grid, .dl { grid-template-columns: 1fr; } .crm-stats { grid-template-columns: repeat(3, 1fr); } }
+
+.note-add { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.notes li { background: var(--tint); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.notes li.note { background: none; padding: 0; }
+.notes time { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.notes p { margin: 0; font-size: 14.5px; white-space: pre-wrap; }
+.by { color: var(--muted); font-size: 12.5px; margin-left: 8px; }
+.link-del { align-self: flex-end; background: none; border: 0; color: #b3361b; font: 600 12.5px var(--font-body); cursor: pointer; padding: 2px 0; }
+.link-del.confirm { text-decoration: underline; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* Investments table */
 .inv-card { padding: 8px 20px; }
@@ -380,6 +395,14 @@ table.inv tbody th { width: 34%; }
     <h1>Plano Diretor da Parceria</h1>
     <p class="purpose">Definir o que cabe à Select e à KS para vender e atender bem o produtor do território.</p>
     <div class="actions">
+      <a class="btn current" href="#plano" aria-current="page">
+        Metas
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h14M6 14V9M10 14V5M14 14v-7"/></svg>
+      </a>
+      <a class="btn" href="#estrategico">
+        Estratégico
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
+      </a>
       <a class="btn" href="#planejamento">
         Planejamento
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
@@ -387,10 +410,6 @@ table.inv tbody th { width: 34%; }
       <a class="btn" href="#termos">
         Termos
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5z"/><path d="M8 9h5M8 12h5M8 15h3"/></svg>
-      </a>
-      <a class="btn" href="#estrategico">
-        Estratégico
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
       </a>
       <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
         Produtos KS
@@ -404,7 +423,7 @@ table.inv tbody th { width: 34%; }
     <div class="overview">
       <div class="band">Parceria Select e KS</div>
       <div class="cols">
-        <div class="col"><h3>Território</h3><ul class="cities"><li>Altamira do Paraná</li><li>Campina da Lagoa<small>Bela Vista do Piquiri · Salles de Oliveira</small></li><li>Goioerê</li><li>Janiópolis</li><li>Juranda<small>Primavera</small></li><li>Mariluz</li><li>Moreira Sales</li><li>Nova Cantu</li><li>Perobal</li><li>Quarto Centenário<small>Bandeirantes D'Oeste</small></li><li>Rancho Alegre D'Oeste</li><li>Ubiratã</li></ul></div>
+        <div class="col"><h3>Território</h3><ul class="cities"><li>Altamira do Paraná</li><li>Bandeirantes D'Oeste (D)</li><li>Bela Vista do Piquiri (D)</li><li>Campina da Lagoa</li><li>Goioerê</li><li>Janiópolis</li><li>Juranda</li><li>Mariluz</li><li>Moreira Sales</li><li>Nova Cantu</li><li>Perobal</li><li>Primavera (D)</li><li>Quarto Centenário</li><li>Rancho Alegre D'Oeste</li><li>Salles de Oliveira (D)</li><li>Ubiratã</li></ul></div>
         <div class="col"><h3>Select</h3><ul><li>Prospecção e propostas</li><li>Acompanhar demonstração</li><li>Atendimento de 1º nível</li><li>Peças de maior giro</li><li>Marketing regional</li><li>NFS-e da comissão</li><li>Relatório mensal</li></ul></div>
         <div class="col"><h3>KS</h3><ul><li>Fabricação e prazos</li><li>Faturamento ao cliente</li><li>Pagamento da comissão</li><li>Garantia e suporte 2º nível</li><li>Treinamento técnico</li><li>Máquina de demonstração</li><li>Material oficial da marca</li></ul></div>
       </div>
@@ -429,6 +448,10 @@ table.inv tbody th { width: 34%; }
         Metas
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h14M6 14V9M10 14V5M14 14v-7"/></svg>
       </a>
+      <a class="btn" href="#estrategico">
+        Estratégico
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
+      </a>
       <a class="btn" href="#planejamento">
         Planejamento
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
@@ -436,10 +459,6 @@ table.inv tbody th { width: 34%; }
       <a class="btn current" href="#termos" aria-current="page">
         Termos
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5z"/><path d="M8 9h5M8 12h5M8 15h3"/></svg>
-      </a>
-      <a class="btn" href="#estrategico">
-        Estratégico
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
       </a>
       <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
         Produtos KS
@@ -506,6 +525,10 @@ table.inv tbody th { width: 34%; }
         Metas
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h14M6 14V9M10 14V5M14 14v-7"/></svg>
       </a>
+      <a class="btn" href="#estrategico">
+        Estratégico
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
+      </a>
       <a class="btn current" href="#planejamento" aria-current="page">
         Planejamento
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
@@ -513,10 +536,6 @@ table.inv tbody th { width: 34%; }
       <a class="btn" href="#termos">
         Termos
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5z"/><path d="M8 9h5M8 12h5M8 15h3"/></svg>
-      </a>
-      <a class="btn" href="#estrategico">
-        Estratégico
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
       </a>
       <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
         Produtos KS
@@ -543,6 +562,10 @@ table.inv tbody th { width: 34%; }
         Metas
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h14M6 14V9M10 14V5M14 14v-7"/></svg>
       </a>
+      <a class="btn current" href="#estrategico" aria-current="page">
+        Estratégico
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
+      </a>
       <a class="btn" href="#planejamento">
         Planejamento
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
@@ -550,10 +573,6 @@ table.inv tbody th { width: 34%; }
       <a class="btn" href="#termos">
         Termos
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5z"/><path d="M8 9h5M8 12h5M8 15h3"/></svg>
-      </a>
-      <a class="btn current" href="#estrategico" aria-current="page">
-        Estratégico
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
       </a>
       <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
         Produtos KS
@@ -604,6 +623,10 @@ table.inv tbody th { width: 34%; }
         Metas
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 17h14M6 14V9M10 14V5M14 14v-7"/></svg>
       </a>
+      <a class="btn current" href="#estrategico" aria-current="page">
+        Estratégico
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
+      </a>
       <a class="btn" href="#planejamento">
         Planejamento
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
@@ -611,10 +634,6 @@ table.inv tbody th { width: 34%; }
       <a class="btn" href="#termos">
         Termos
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 2.5h7l3 3v12H5z"/><path d="M8 9h5M8 12h5M8 15h3"/></svg>
-      </a>
-      <a class="btn current" href="#estrategico" aria-current="page">
-        Estratégico
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2.5 5.5 7 3.5l6 2 4.5-2v11L13 16.5l-6-2-4.5 2z"/><path d="M7 3.5v11M13 5.5v11"/></svg>
       </a>
       <a class="btn" href="https://kspulverizadores.com.br/shop/" target="_blank" rel="noopener">
         Produtos KS
@@ -787,7 +806,9 @@ const kindTag = { terr: '<span class="tag cp-tag">Território</span>', cm: '<spa
 const terrCities = MAP.cities.filter(c => c.kind === 'terr');
 put('kpis', kpi(terrCities.length, 'municípios') +
   kpi(fmt(terrCities.reduce((a, c) => a + c.pop, 0)), 'habitantes no território (Censo 2022)') +
-  kpi(fmt(terrCities.reduce((a, c) => a + c.area, 0)) + ' km²', 'de área no território'));
+  kpi(fmt(terrCities.reduce((a, c) => a + c.area, 0)) + ' km²', 'de área no território') +
+  `<button type="button" class="kpi kpi-go" id="open-painel"><b>Painel →</b><span>captação de clientes</span></button>`);
+document.getElementById('open-painel').addEventListener('click', () => { pf.city = ''; pf.stage = ''; pf.q = ''; if (location.hash === '#painel') renderPainel(); else location.hash = 'painel'; });
 const svg = document.getElementById('pr-map');
 const NS = 'http://www.w3.org/2000/svg';
 svg.innerHTML = `<path class="other" d="${MAP.others}" vector-effect="non-scaling-stroke"/>` +
@@ -869,6 +890,16 @@ let clientes = [];
 let clientesCol = null;
 let crmReady = false;
 const pf = { city: '', stage: '', q: '' };
+let me = null, userCap = null;
+const names = {};
+const who2 = id => id ? (names[id] || 'Usuário') : '';
+async function resolveNames(ids) {
+  if (!userCap) return;
+  const want = [...new Set(ids.filter(Boolean))].filter(id => !(id in names));
+  if (!want.length) return;
+  try { const ps = await userCap.profiles(want); want.forEach(id => { names[id] = (ps[id] && ps[id].name) || 'Usuário'; }); } catch (e) {}
+}
+const stamp = () => ({ data: today(), hora: new Date().toTimeString().slice(0, 5), ...(me ? { por: me } : {}) });
 const reached = (cl, k) => {
   const idx = FLOW.indexOf(k);
   const hist = (cl.historico || []).map(h => h.etapa).concat(cl.etapa);
@@ -883,13 +914,11 @@ function renderCityCrm() {
   if (!box || !crmInit) return;
   if (crmDisabled) { box.hidden = true; box.previousElementSibling.hidden = true; return; }
   const list = clientes.filter(c => c.cidadeId === current);
-  const n = k => list.filter(c => reached(c, k)).length;
   const val = v => crmReady ? v : '—';
   box.innerHTML = `
     <button type="button" class="crm-stat" data-go="" ><b>${val(list.length)}</b><span>Contatos</span></button>
-    <button type="button" class="crm-stat" data-go="visita"><b>${val(n('visita'))}</b><span>Visitas</span></button>
-    <button type="button" class="crm-stat" data-go="venda"><b>${val(list.filter(c => c.etapa === 'venda').length)}</b><span>Vendas</span></button>
-    <button type="button" class="crm-stat go" data-go="painel"><b>→</b><span>Painel</span></button>`;
+    <button type="button" class="crm-stat" data-go="visita"><b>${val(list.filter(c => c.etapa === 'visita').length)}</b><span>Visitas</span></button>
+    <button type="button" class="crm-stat" data-go="venda"><b>${val(list.filter(c => c.etapa === 'venda').length)}</b><span>Vendas</span></button>`;
 }
 document.getElementById('city-panel').addEventListener('click', e => {
   const b = e.target.closest('[data-go]'); if (!b) return;
@@ -916,8 +945,7 @@ function renderPainel() {
   const total = base.length, vendas = count('venda'), des = count('desistencia');
   const pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
   document.getElementById('macro').innerHTML = `<span><b>${total}</b> ${total === 1 ? 'cliente' : 'clientes'} no filtro</span><span>Em negociação: <b>${count('contato') + count('visita') + count('retorno')}</b></span><span>Conversão em venda: <b>${pct(vendas, total)}</b></span><span>Desistência: <b>${pct(des, total)}</b></span>`;
-  const reachRows = FLOW.map(k => ({ n: stageOf(k).n, c: stageOf(k).c, v: base.filter(c => reached(c, k)).length }));
-  reachRows.push({ n: 'Desistência', c: stageOf('desistencia').c, v: des });
+  const reachRows = STAGES.map(s => ({ n: s.n, c: s.c, v: count(s.k) }));
   document.getElementById('chart-funnel').innerHTML = hbars(reachRows, Math.max(1, ...reachRows.map(r => r.v)));
   const byCity = MAP.cities.map(c => ({ n: c.name, c: '#37634c', v: base.filter(x => x.cidadeId === c.id).length })).filter(r => r.v).sort((a, b) => b.v - a.v);
   document.getElementById('chart-city').innerHTML = hbars(byCity, Math.max(1, ...byCity.map(r => r.v)));
@@ -937,13 +965,17 @@ document.getElementById('crm-rows').addEventListener('keydown', e => { if (e.key
 const overlay = document.getElementById('overlay');
 const sheet = document.getElementById('sheet');
 let lastFocus = null;
-const openSheet = html => { lastFocus = document.activeElement; sheet.innerHTML = html; overlay.hidden = false; (sheet.querySelector('input, select, button') || sheet).focus(); };
+const openSheet = html => { if (overlay.hidden) lastFocus = document.activeElement; sheet.innerHTML = html; overlay.hidden = false; (sheet.querySelector('input, select, button') || sheet).focus(); };
 const closeSheet = () => { overlay.hidden = true; sheet.innerHTML = ''; if (lastFocus) lastFocus.focus(); };
 overlay.addEventListener('click', e => { if (e.target === overlay) closeSheet(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) closeSheet(); });
 
-function openClient(id) {
-  const c = clientes.find(x => x.id === id); if (!c) return;
+let pendingOpen = null;
+const reopen = id => { pendingOpen = id; };
+async function openClient(id) {
+  const c0 = clientes.find(x => x.id === id); if (!c0) return;
+  await resolveNames([...(c0.historico || []).map(x => x.por), ...(c0.notas || []).map(x => x.por)]);
+  const c = clientes.find(x => x.id === id) || c0;
   const usados = (c.usados || []).length ? `<ul>${c.usados.map(u => `<li>${esc(u)}</li>`).join('')}</ul>` : '—';
   openSheet(`
     <div class="sheet-top"><div><h2 id="sheet-title">${esc(c.nome)}</h2>${stPill(c.etapa)}</div><button type="button" class="x" data-act="close" aria-label="Fechar">×</button></div>
@@ -958,9 +990,11 @@ function openClient(id) {
     </dl>
     <div class="cp-sub">Mover para outra etapa</div>
     <div class="movers">${STAGES.filter(s => s.k !== c.etapa).map(s => `<button type="button" class="mover" style="--c:${s.c}" data-move="${s.k}">${s.n}</button>`).join('')}</div>
-    <label class="fld"><span>Anotação da etapa (opcional)</span><input id="move-note" placeholder="Ex.: visita marcada para sexta"></label>
-    <div class="cp-sub">Histórico</div>
-    <ul class="hist">${(c.historico || []).slice().reverse().map(hh => `<li><time>${br(hh.data)}</time><span>${esc(stageOf(hh.etapa).n)}${hh.nota ? ' · ' + esc(hh.nota) : ''}</span></li>`).join('') || '<li>—</li>'}</ul>
+    <div class="cp-sub">Anotações</div>
+    <div class="note-add"><label class="fld grow"><span class="sr">Nova anotação</span><textarea id="new-note" placeholder="Ex.: visita marcada para sexta, cliente quer proposta com o usado na troca"></textarea></label><button type="button" class="btn small" data-act="add-note">Adicionar anotação</button></div>
+    <ul class="notes">${(c.notas || []).slice().reverse().map(n => `<li><div><time>${br(n.data)}${n.hora ? ' ' + n.hora : ''}</time>${n.por ? `<span class="by">${esc(who2(n.por))}</span>` : ''}</div><p>${esc(n.texto)}</p><button type="button" class="link-del" data-del-note="${escA(n.id)}">Excluir</button></li>`).join('') || '<li class="note">Nenhuma anotação ainda.</li>'}</ul>
+    <div class="cp-sub">Histórico de movimentações</div>
+    <ul class="hist">${(c.historico || []).slice().reverse().map(hh => `<li><time>${br(hh.data)}${hh.hora ? ' ' + hh.hora : ''}</time><span>${hh.acao ? esc(hh.acao) : 'Movido para ' + esc(stageOf(hh.etapa).n)}${hh.nota ? ' · ' + esc(hh.nota) : ''}${hh.por ? ` <span class="by">por ${esc(who2(hh.por))}</span>` : ''}</span></li>`).join('') || '<li>—</li>'}</ul>
     <p class="err" id="sheet-err" hidden></p>
     <div class="sheet-actions"><button type="button" class="btn ghost-sm" data-act="delete">Excluir</button><button type="button" class="btn small" data-act="edit">Editar dados</button></div>`);
   sheet.onclick = async e => {
@@ -972,9 +1006,20 @@ function openClient(id) {
     }
     if (b.dataset.act === 'confirm-delete') { await safeWrite(() => clientesCol.doc(c.id).delete()) && closeSheet(); return; }
     if (b.dataset.move) {
-      const nota = document.getElementById('move-note').value.trim();
-      const historico = [...(c.historico || []), { etapa: b.dataset.move, data: today(), ...(nota ? { nota } : {}) }];
+      const historico = [...(c.historico || []), { etapa: b.dataset.move, ...stamp() }];
       if (await safeWrite(() => clientesCol.doc(c.id).update({ etapa: b.dataset.move, atualizadoEm: today(), historico }))) closeSheet();
+      return;
+    }
+    if (b.dataset.act === 'add-note') {
+      const t = document.getElementById('new-note').value.trim(); if (!t) return;
+      const notas = [...(c.notas || []), { id: 'n' + Date.now().toString(36), texto: t, ...stamp() }];
+      if (await safeWrite(() => clientesCol.doc(c.id).update({ notas, atualizadoEm: today() }))) reopen(c.id);
+      return;
+    }
+    if (b.dataset.delNote) {
+      if (!b.classList.contains('confirm')) { b.classList.add('confirm'); b.textContent = 'Confirmar exclusão'; return; }
+      const notas = (c.notas || []).filter(n => n.id !== b.dataset.delNote);
+      if (await safeWrite(() => clientesCol.doc(c.id).update({ notas }))) reopen(c.id);
     }
   };
 }
@@ -1013,8 +1058,8 @@ function openForm(c) {
       atualizadoEm: today(),
     };
     const ok = c
-      ? await safeWrite(() => clientesCol.doc(c.id).update(body))
-      : await safeWrite(() => clientesCol.doc().set({ ...body, etapa: 'contato', criadoEm: today(), historico: [{ etapa: 'contato', data: today() }] }));
+      ? await safeWrite(() => clientesCol.doc(c.id).update({ ...body, historico: [...(c.historico || []), { etapa: c.etapa, acao: 'Dados do cliente editados', ...stamp() }] }))
+      : await safeWrite(() => clientesCol.doc().set({ ...body, etapa: 'contato', criadoEm: today(), notas: [], historico: [{ etapa: 'contato', acao: 'Cliente cadastrado em Primeiro contato', ...stamp() }] }));
     if (ok) closeSheet();
   });
 }
@@ -1047,6 +1092,8 @@ async function safeWrite(fn) {
   const db = window.claude && window.claude.use ? await window.claude.use('db') : null;
   if (!db) { off('O painel de clientes funciona somente na versão privada do Plano Diretor, no Claude. Os dados de clientes não ficam nesta página pública.'); return; }
   clientesCol = db.collection('clientes');
+  userCap = await window.claude.use('user');
+  if (userCap) { try { me = await userCap.id(); } catch (e) { me = null; } }
   const status = document.getElementById('crm-status');
   const timer = setTimeout(() => { status.textContent = 'Não foi possível carregar os clientes ainda. Os dados podem estar desatualizados.'; }, 10000);
   clientesCol.onSnapshot(snap => {
@@ -1055,6 +1102,7 @@ async function safeWrite(fn) {
     crmReady = true;
     renderCityCrm();
     if (location.hash === '#painel') renderPainel();
+    if (pendingOpen && !overlay.hidden) { const id = pendingOpen; pendingOpen = null; openClient(id); }
   }, () => { clearTimeout(timer); status.textContent = 'O painel perdeu a conexão com os dados. Recarregue a página.'; crmReady = true; renderPainel(); });
 })();
 
