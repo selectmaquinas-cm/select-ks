@@ -245,6 +245,10 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .crm-stat:focus-visible, .stage-card:focus-visible, .crm-table tbody tr:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .crm { display: flex; flex-direction: column; gap: 16px; }
 .crm-off { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; color: var(--muted); display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.login { display: grid; gap: 12px; width: min(420px, 100%); }
+.chk { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--fg); }
+.crm-who { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); margin-top: -6px; }
+.link-btn { background: none; border: 0; padding: 0; color: var(--green-dark); font: 600 13.5px var(--font-body); cursor: pointer; text-decoration: underline; }
 .crm-off h3 { font-size: 19px; color: var(--green-dark); }
 .crm-off p { max-width: 65ch; }
 .crm-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
@@ -652,6 +656,8 @@ table.inv tbody th { width: 34%; }
         <label class="fld grow"><span>Buscar cliente</span><input id="pf-q" type="search" placeholder="Nome do cliente"></label>
         <button type="button" class="btn" id="new-client">Novo cliente</button>
       </div>
+      <div class="crm-who"><span>Conectado como <b id="crm-user"></b></span><button type="button" class="link-btn" id="crm-refresh">Atualizar dados</button><button type="button" class="link-btn" id="crm-logout">Sair</button>
+      </div>
       <div class="stage-cards" id="stage-cards"></div>
       <div class="macro" id="macro"></div>
       <div class="crm-charts">
@@ -894,9 +900,10 @@ let crmReady = false;
 const pf = { city: '', stage: '', q: '' };
 let me = null, userCap = null;
 const names = {};
-const who2 = id => id ? (names[id] || 'Usuário') : '';
+const who2 = id => !id ? '' : (/^u_/.test(id) ? (names[id] || 'Usuário') : id);
 async function resolveNames(ids) {
   if (!userCap) return;
+  ids = ids.filter(i => /^u_/.test(i || ''));
   const want = [...new Set(ids.filter(Boolean))].filter(id => !(id in names));
   if (!want.length) return;
   try { const ps = await userCap.profiles(want); want.forEach(id => { names[id] = (ps[id] && ps[id].name) || 'Usuário'; }); } catch (e) {}
@@ -917,6 +924,7 @@ function renderCityCrm() {
   if (crmDisabled) { box.hidden = true; box.previousElementSibling.hidden = true; return; }
   const list = clientes.filter(c => c.cidadeId === current);
   const val = v => crmReady ? v : '—';
+  if (!crmReady) { box.innerHTML = `<button type="button" class="crm-stat" data-go="" style="grid-column:1/-1"><b>Entrar</b><span>para ver os clientes desta cidade</span></button>`; return; }
   box.innerHTML = `
     <button type="button" class="crm-stat" data-go="" ><b>${val(list.length)}</b><span>Contatos</span></button>
     <button type="button" class="crm-stat" data-go="visita"><b>${val(list.filter(c => c.etapa === 'visita').length)}</b><span>Visitas</span></button>
@@ -973,7 +981,7 @@ overlay.addEventListener('click', e => { if (e.target === overlay) closeSheet();
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) closeSheet(); });
 
 let pendingOpen = null;
-const reopen = id => { pendingOpen = id; };
+const reopen = id => openClient(id);
 async function openClient(id) {
   const c0 = clientes.find(x => x.id === id); if (!c0) return;
   await resolveNames([...(c0.historico || []).map(x => x.por), ...(c0.notas || []).map(x => x.por)]);
@@ -1074,7 +1082,8 @@ async function safeWrite(fn) {
   try { await fn(); return true; }
   catch (e) {
     if (err) {
-      err.textContent = e && e.code === 'invalid_argument' ? 'Você não tem permissão para alterar os clientes deste painel.'
+      err.textContent = e && e.code === 'senha' ? 'A senha de acesso mudou. Clique em Sair e entre de novo.'
+        : e && e.code === 'invalid_argument' ? 'Você não tem permissão para alterar os clientes deste painel.'
         : e && e.code === 'quota_exceeded' ? 'O limite de registros foi atingido. Exclua clientes antigos para cadastrar novos.'
         : 'Não foi possível salvar agora. Tente de novo em instantes.';
       err.hidden = false;
@@ -1083,36 +1092,92 @@ async function safeWrite(fn) {
   }
 }
 
-(async () => {
-  const off = (title, msg) => {
-    document.getElementById('crm').hidden = true;
-    const o = document.getElementById('crm-off');
-    o.innerHTML = `<h3>${esc(title)}</h3><p>${esc(msg)}</p><a class="btn small" href="https://claude.ai/artifact/6dvH2jQsJuZGZ1wNtYbQrq#painel" target="_blank" rel="noopener">Abrir o painel no Claude</a>`;
-    o.hidden = false;
-    document.querySelectorAll('.cp-sub').forEach(el => { if (el.textContent === 'Captação de clientes') el.hidden = true; });
-    const cc = document.getElementById('crm-city'); if (cc) cc.hidden = true;
-    crmDisabled = true;
-  };
+/* Dados dos clientes: planilha Google (Apps Script), protegida por senha conferida no servidor */
+const SHEETS_URL = '__SHEETS_URL__';
+const GITHUB_PAINEL = 'https://selectmaquinas-cm.github.io/select-ks/#painel';
+const store = {
+  get(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } },
+  set(k, v, keep) { try { (keep ? localStorage : sessionStorage).setItem(k, v); } catch (e) {} },
+  clear() { try { ['crm-senha', 'crm-nome'].forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); }); } catch (e) {} },
+};
+let senha = '';
+async function api(payload) {
+  const r = await fetch(SHEETS_URL, { method: 'POST', body: JSON.stringify({ ...payload, senha }) });
+  const j = await r.json();
+  if (!j.ok) { const e = new Error(j.erro || 'erro'); e.code = j.erro; throw e; }
+  return j;
+}
+const applyList = list => {
+  clientes = list;
+  crmReady = true;
+  renderCityCrm();
+  if (location.hash === '#painel') renderPainel();
+  if (pendingOpen && !overlay.hidden) { const id = pendingOpen; pendingOpen = null; openClient(id); }
+};
+const saveFull = async obj => applyList((await api({ acao: 'salvar', cliente: { ...obj, cidadeNome: placeOf(obj) } })).clientes);
+clientesCol = {
+  doc(id) {
+    id = id || 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    return {
+      set: data => saveFull({ ...data, id }),
+      update: patch => { const cur = clientes.find(c => c.id === id) || {}; return saveFull({ ...cur, ...patch, id }); },
+      delete: async () => applyList((await api({ acao: 'excluir', id })).clientes),
+    };
+  },
+};
+const crmOff = document.getElementById('crm-off');
+const crmMain = document.getElementById('crm');
+const showOff = html => {
+  crmMain.hidden = true; crmOff.innerHTML = html; crmOff.hidden = false;
+  crmReady = false; clientes = []; renderCityCrm();
+};
+const showLogin = msg => {
+  showOff(`<h3>Acesso ao painel de clientes</h3><p>Digite a senha de acesso e o seu nome. O nome fica registrado no histórico de cada movimentação que você fizer.</p>
+    <form id="login-form" class="login" novalidate>
+      <label class="fld"><span>Seu nome</span><input id="lg-nome" autocomplete="name" value="${escA(store.get('crm-nome'))}" placeholder="Ex.: Nick"></label>
+      <label class="fld"><span>Senha de acesso</span><input id="lg-senha" type="password" autocomplete="current-password"></label>
+      <label class="chk"><input id="lg-lembrar" type="checkbox"> Lembrar neste aparelho</label>
+      <p class="err" id="lg-err" ${msg ? '' : 'hidden'}>${esc(msg || '')}</p>
+      <button type="submit" class="btn small">Entrar</button>
+    </form>`);
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const nome = document.getElementById('lg-nome').value.trim();
+    const s = document.getElementById('lg-senha').value;
+    const err = document.getElementById('lg-err');
+    if (!nome || !s) { err.textContent = 'Preencha o seu nome e a senha.'; err.hidden = false; return; }
+    const keep = document.getElementById('lg-lembrar').checked;
+    store.clear(); store.set('crm-nome', nome, keep); store.set('crm-senha', s, keep);
+    me = nome; senha = s; entrar();
+  });
+};
+async function entrar() {
+  try {
+    const j = await api({ acao: 'listar' });
+    crmOff.hidden = true; crmMain.hidden = false;
+    document.getElementById('crm-user').textContent = me;
+    applyList(j.clientes);
+  } catch (e) {
+    if (e.code === 'senha') { store.clear(); showLogin('Senha incorreta. Confira com o responsável pelo painel.'); }
+    else showLogin('Não foi possível conectar à planilha agora. Verifique a internet e tente de novo.');
+  }
+}
+document.getElementById('crm-logout').addEventListener('click', () => { store.clear(); senha = ''; showLogin(); });
+document.getElementById('crm-refresh').addEventListener('click', () => entrar());
+window.addEventListener('hashchange', () => { if (location.hash === '#painel' && senha) entrar(); });
+
+(() => {
   const inClaude = !!(window.claude && window.claude.use);
-  const db = inClaude ? await window.claude.use('db') : null;
-  if (!db) {
-    if (inClaude) off('Entre na sua conta do Claude', 'Os clientes só aparecem para quem está conectado ao Claude e foi convidado para este plano. Em uma janela anônima ou sem login, o painel fica bloqueado para proteger os dados.');
-    else off('Painel disponível só na versão privada', 'Esta é a página pública do plano. Os dados dos clientes ficam protegidos na versão do Claude, acessível apenas para quem tem login e convite.');
+  if (inClaude) {
+    showOff(`<h3>O painel de clientes fica no link público</h3><p>Os clientes estão guardados numa planilha protegida por senha e são acessados pelo link do GitHub.</p><a class="btn small" href="${GITHUB_PAINEL}" target="_blank" rel="noopener">Abrir o painel</a>`);
+    crmDisabled = true; renderCityCrm(); return;
+  }
+  if (!/^https:\/\/script\.google\.com\//.test(SHEETS_URL)) {
+    showOff('<h3>Painel em configuração</h3><p>A planilha de clientes ainda não foi ligada a esta página.</p>');
     return;
   }
-  clientesCol = db.collection('clientes');
-  userCap = await window.claude.use('user');
-  if (userCap) { try { me = await userCap.id(); } catch (e) { me = null; } }
-  const status = document.getElementById('crm-status');
-  const timer = setTimeout(() => { status.textContent = 'Não foi possível carregar os clientes ainda. Os dados podem estar desatualizados.'; }, 10000);
-  clientesCol.onSnapshot(snap => {
-    clientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    if (!snap.metadata.fromCache) { clearTimeout(timer); status.textContent = ''; }
-    crmReady = true;
-    renderCityCrm();
-    if (location.hash === '#painel') renderPainel();
-    if (pendingOpen && !overlay.hidden) { const id = pendingOpen; pendingOpen = null; openClient(id); }
-  }, () => { clearTimeout(timer); status.textContent = 'O painel perdeu a conexão com os dados. Recarregue a página.'; crmReady = true; renderPainel(); });
+  me = store.get('crm-nome'); senha = store.get('crm-senha');
+  if (me && senha) entrar(); else showLogin();
 })();
 
 const headLogos = document.querySelectorAll('.mast .brands img');
