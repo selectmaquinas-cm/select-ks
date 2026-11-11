@@ -748,9 +748,7 @@ table.inv tbody th { width: 34%; }
         <label class="fld"><span>Período</span><select id="pf-period"></select></label>
         <label class="fld grow"><span>Buscar cliente</span><input id="pf-q" type="search" placeholder="Nome do cliente"></label>
         <button type="button" class="btn gray" id="new-client">Novo cliente</button>
-      <details class="user-menu"><summary><span id="crm-user"></span></summary><div class="um-list"><button type="button" id="crm-refresh">Atualizar dados</button><button type="button" id="crm-export">Exportar lista (Excel)</button><button type="button" id="crm-logout">Sair</button></div></details>
       </div>
-      <div class="agenda" id="agenda"></div>
       <div class="stage-cards" id="stage-cards"></div>
       <div class="macro" id="macro"></div>
       <div class="crm-charts">
@@ -758,6 +756,7 @@ table.inv tbody th { width: 34%; }
         <div class="block chart-card"><h3>Clientes por cidade</h3><div id="chart-city"></div></div>
         <div class="block chart-card"><h3>Motivos de desistência</h3><div id="chart-motivos"></div></div>
       </div>
+      <div class="agenda" id="agenda"></div>
       <div class="block inv-card">
         <div class="list-head"><h3 id="list-title">Todos os clientes</h3><div class="seg" role="group" aria-label="Forma de exibição"><button type="button" data-view-mode="lista">Lista</button><button type="button" data-view-mode="colunas">Colunas</button></div></div>
         <div class="inv-scroll" id="crm-list"><table class="inv crm-table"><thead><tr><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Etapa</th><th scope="col">Valor</th><th scope="col">Próxima ação</th><th scope="col">Alerta</th></tr></thead><tbody id="crm-rows"></tbody></table></div>
@@ -1183,19 +1182,6 @@ document.getElementById('painel').addEventListener('click', async e => {
 });
 const confirmIn = b => { if (b.dataset.sure) return true; b.dataset.sure = '1'; b.textContent = 'Confirmar venda?'; return false; };
 
-/* ---- Exportar ---- */
-document.getElementById('crm-export').addEventListener('click', () => {
-  const head = ['Cliente', 'Cidade', 'Responsável', 'Etapa', 'Valor da proposta', 'Máquina de interesse', 'Usados', 'Telefone', 'Próxima ação', 'Data da próxima ação', 'Última atividade', 'Motivo da desistência'];
-  let list = filtered();
-  if (pf.stage === 'parados') list = list.filter(staleInfo); else if (pf.stage) list = list.filter(c => c.etapa === pf.stage);
-  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
-  const rows = list.map(c => [c.nome, placeOf(c), c.responsavel, stageOf(c.etapa).n, c.valor || '', c.maquina, c.usados.map(u => [u.descricao, u.ano, u.valor ? money(u.valor) : ''].filter(Boolean).join(' ')).join(' | '), c.telefone, c.proxAcao, br(c.proxData), br(lastActivity(c)), c.motivoDesistencia]);
-  const csv = '﻿' + [head, ...rows].map(r => r.map(q).join(';')).join('\r\n');
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  const a = document.createElement('a'); a.href = url; a.download = `clientes-select-ks-${today()}.csv`;
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
-});
-
 /* ---- Ficha do cliente ---- */
 const overlay = document.getElementById('overlay');
 const sheet = document.getElementById('sheet');
@@ -1422,17 +1408,15 @@ async function entrar() {
     const j = await api({ acao: 'listar' });
     crmOff.hidden = true; crmMain.hidden = false;
     gate.hidden = true; document.body.classList.remove('locked');
-    document.getElementById('crm-user').textContent = me;
     applyList(j.clientes);
   } catch (e) {
     if (e.code === 'senha') { store.clear(); showLogin('Senha incorreta. Confira com o responsável pelo painel.'); }
     else showLogin('Não foi possível conectar agora. Verifique a internet e tente de novo.');
   }
 }
-document.getElementById('crm-logout').addEventListener('click', () => { store.clear(); senha = ''; showLogin(); });
-document.getElementById('crm-refresh').addEventListener('click', () => entrar());
-document.querySelector('.user-menu').addEventListener('click', e => { if (e.target.closest('.um-list button')) e.currentTarget.removeAttribute('open'); });
 window.addEventListener('hashchange', () => { if (location.hash === '#painel' && senha) entrar(); });
+setInterval(() => { if (senha && crmReady && !document.hidden && overlay.hidden) entrar(); }, 120000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && senha && crmReady && overlay.hidden) entrar(); });
 
 (() => {
   const inClaude = !!(window.claude && window.claude.use);
