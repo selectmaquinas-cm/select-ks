@@ -26,6 +26,10 @@
   --pill-neg-bg: #e3edf8;
   --pill-neg-fg: #1f4f86;
   --ks-bg: #fbefb3;
+  --go-bg: #cfe8d6;
+  --go-bg-h: #b9dcc3;
+  --go-line: #6fae83;
+  --go-fg: #1f4a33;
   --ks-fg: #6b5400;
   --font-display: "Saira", "Arial Narrow", Arial, sans-serif;
   --font-body: "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
@@ -37,6 +41,7 @@
     --orange: #f08353; --on-green: #10180f;
     --pill-wait-bg: #3a2a18; --pill-wait-fg: #f2c08c; --pill-neg-bg: #1b2b40; --pill-neg-fg: #a9c9f0;
     --ks-bg: #3a3214; --ks-fg: #f1d66e;
+    --go-bg: #24452f; --go-bg-h: #2d5539; --go-line: #5e9c72; --go-fg: #d4eedb;
     color-scheme: dark;
   }
 }
@@ -46,6 +51,7 @@
   --orange: #f08353; --on-green: #10180f;
   --pill-wait-bg: #3a2a18; --pill-wait-fg: #f2c08c; --pill-neg-bg: #1b2b40; --pill-neg-fg: #a9c9f0;
     --ks-bg: #3a3214; --ks-fg: #f1d66e;
+    --go-bg: #24452f; --go-bg-h: #2d5539; --go-line: #5e9c72; --go-fg: #d4eedb;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -161,9 +167,10 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .kpis.compact .kpi { padding: 10px 14px; border-top-width: 3px; }
 .kpis.compact .kpi b { font-size: 22px; }
 .kpis.compact .kpi span { font-size: 12.5px; }
-.kpi-go { cursor: pointer; text-align: left; font: inherit; background: var(--green); border-color: var(--green); border-top-color: var(--green-dark); }
-.kpi-go b, .kpi-go span { color: var(--on-green) !important; }
-.kpi-go:hover { background: var(--green-dark); }
+.kpi-go { cursor: pointer; text-align: left; font: inherit; background: var(--go-bg); border-color: var(--go-line); border-top-color: var(--go-line); }
+.kpi-go b { color: var(--go-fg) !important; }
+.kpi-go span { color: var(--go-fg) !important; opacity: .85; }
+.kpi-go:hover { background: var(--go-bg-h); }
 .kpi-go:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .kpi.mkt { border-top-color: var(--orange); } .kpi.expo { border-top-color: var(--ks-fg); }
 .quarters { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -249,6 +256,15 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .chk { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--fg); }
 .crm-who { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); margin-top: -6px; }
 .link-btn { background: none; border: 0; padding: 0; color: var(--green-dark); font: 600 13.5px var(--font-body); cursor: pointer; text-decoration: underline; }
+.gate { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding-block: 24px; }
+body.locked .wrap { display: none; }
+.gate-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; width: min(460px, 100%); display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center; }
+.gate-card .brands { background: #fff; }
+.gate-card .brands img { height: 34px; } .gate-card .brands .ks { height: 41px; }
+.gate-card h1 { font-size: 26px; color: var(--green-dark); }
+.gate-card p { color: var(--muted); font-size: 14.5px; }
+.gate-card .login { text-align: left; }
+.login .btn { justify-content: center; }
 .crm-off h3 { font-size: 19px; color: var(--green-dark); }
 .crm-off p { max-width: 65ch; }
 .crm-bar { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
@@ -389,6 +405,7 @@ table.inv tbody th { width: 34%; }
 <body>
 
 
+<div class="gate" id="gate" hidden><div class="gate-card" id="gate-card"></div></div>
 <div class="wrap">
 
   <header class="mast" data-view="main">
@@ -1131,8 +1148,12 @@ const showOff = html => {
   crmMain.hidden = true; crmOff.innerHTML = html; crmOff.hidden = false;
   crmReady = false; clientes = []; renderCityCrm();
 };
+const gate = document.getElementById('gate');
 const showLogin = msg => {
-  showOff(`<h3>Acesso ao painel de clientes</h3><p>Digite a senha de acesso e o seu nome. O nome fica registrado no histórico de cada movimentação que você fizer.</p>
+  crmReady = false; clientes = []; renderCityCrm();
+  document.body.classList.add('locked'); gate.hidden = false;
+  const hl = document.querySelectorAll('.mast .brands img');
+  document.getElementById('gate-card').innerHTML = (`<div class="brands"><img src="${hl[0].src}" alt="Select Máquinas Agrícolas"><span class="sep" aria-hidden="true"></span><img class="ks" src="${hl[1].src}" alt="KS Pulverizadores"></div><h1>Plano Diretor da Parceria</h1><p>Digite seu nome e a senha de acesso. O nome fica registrado no histórico de cada movimentação que você fizer.</p>
     <form id="login-form" class="login" novalidate>
       <label class="fld"><span>Seu nome</span><input id="lg-nome" autocomplete="name" value="${escA(store.get('crm-nome'))}" placeholder="Ex.: Nick"></label>
       <label class="fld"><span>Senha de acesso</span><input id="lg-senha" type="password" autocomplete="current-password"></label>
@@ -1155,11 +1176,12 @@ async function entrar() {
   try {
     const j = await api({ acao: 'listar' });
     crmOff.hidden = true; crmMain.hidden = false;
+    gate.hidden = true; document.body.classList.remove('locked'); window.scrollTo(0, 0);
     document.getElementById('crm-user').textContent = me;
     applyList(j.clientes);
   } catch (e) {
     if (e.code === 'senha') { store.clear(); showLogin('Senha incorreta. Confira com o responsável pelo painel.'); }
-    else showLogin('Não foi possível conectar à planilha agora. Verifique a internet e tente de novo.');
+    else showLogin('Não foi possível conectar agora. Verifique a internet e tente de novo.');
   }
 }
 document.getElementById('crm-logout').addEventListener('click', () => { store.clear(); senha = ''; showLogin(); });
