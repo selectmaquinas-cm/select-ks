@@ -120,7 +120,9 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .col::before { content: ""; position: absolute; left: 50%; top: -28px; width: 1.5px; height: 26px; background: var(--green); }
 .col h3 { text-align: center; font-size: 18px; font-weight: 700; color: var(--fg); padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 .col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
-.col ul.cities { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 14px; }
+.col ul.cities { display: grid; grid-template-columns: auto auto; justify-content: space-between; gap: 9px 12px; }
+.col ul.cities li { white-space: nowrap; font-size: 14px; }
+@media (max-width: 1060px) { .col ul.cities { grid-template-columns: 1fr; } }
 .col li { min-width: 0; }
 .col li small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; }
 
@@ -254,6 +256,16 @@ section { display: flex; flex-direction: column; gap: 20px; }
 .crm-off { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; color: var(--muted); display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
 .login { display: grid; gap: 12px; width: min(420px, 100%); }
 .chk { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--fg); }
+.crm-bar { position: relative; }
+.user-menu { position: relative; align-self: flex-end; }
+.user-menu summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font: 600 14px var(--font-body); color: var(--fg); }
+.user-menu summary::-webkit-details-marker { display: none; }
+.user-menu summary::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #2f9d55; }
+.user-menu summary::after { content: "▾"; color: var(--muted); font-size: 12px; }
+.user-menu summary:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.um-list { position: absolute; left: 0; top: calc(100% + 6px); z-index: 20; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.15); padding: 6px; display: flex; flex-direction: column; min-width: 200px; }
+.um-list button { background: none; border: 0; text-align: left; padding: 9px 12px; border-radius: 8px; font: 14px var(--font-body); color: var(--fg); cursor: pointer; }
+.um-list button:hover { background: var(--tint); }
 .crm-who { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); margin-top: -6px; }
 .link-btn { background: none; border: 0; padding: 0; color: var(--green-dark); font: 600 13.5px var(--font-body); cursor: pointer; text-decoration: underline; }
 .gate { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding-block: 24px; }
@@ -292,6 +304,10 @@ button.btn { border: 0; cursor: pointer; }
 .hbar .track { background: var(--tint); border-radius: 999px; height: 14px; overflow: hidden; }
 .hbar .fill { height: 100%; border-radius: 999px; background: var(--c, var(--green)); min-width: 2px; }
 .hbar b { text-align: right; font-variant-numeric: tabular-nums; }
+.hbtn { width: calc(100% + 12px); background: none; border: 0; border-radius: 8px; padding: 4px 6px; margin: 0 -6px; cursor: pointer; font: inherit; color: var(--fg); text-align: left; }
+.hbtn:hover, .hbtn.on { background: var(--tint); }
+.hbtn .track { display: block; } .hbtn .fill { display: block; }
+.hbtn:focus-visible { outline: 3px solid var(--orange); }
 .empty-chart { color: var(--muted); font-size: 14px; }
 .list-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0 4px; flex-wrap: wrap; }
 .crm-table tbody tr { cursor: pointer; }
@@ -336,7 +352,8 @@ button.btn { border: 0; cursor: pointer; }
 .btn.gray { background: #6b7570; }
 .btn.gray:hover { background: #565f5a; }
 .crm-stat.warn { border-color: #c99a12; background: color-mix(in srgb, #c99a12 14%, var(--surface)); }
-.agenda { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+.agenda { display: grid; gap: 14px; grid-template-columns: 1fr; }
+.ag-list { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 8px !important; }
 .ag-card { padding: 16px 18px; gap: 10px; }
 .ag-card h3 { font-size: 16px; color: var(--green-dark); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
 .ag-card h3 small { font: 400 12.5px var(--font-body); color: var(--muted); }
@@ -731,8 +748,8 @@ table.inv tbody th { width: 34%; }
         <label class="fld"><span>Período</span><select id="pf-period"></select></label>
         <label class="fld grow"><span>Buscar cliente</span><input id="pf-q" type="search" placeholder="Nome do cliente"></label>
         <button type="button" class="btn gray" id="new-client">Novo cliente</button>
+      <details class="user-menu"><summary><span id="crm-user"></span></summary><div class="um-list"><button type="button" id="crm-refresh">Atualizar dados</button><button type="button" id="crm-export">Exportar lista (Excel)</button><button type="button" id="crm-logout">Sair</button></div></details>
       </div>
-      <div class="crm-who"><span>Conectado como <b id="crm-user"></b></span><button type="button" class="link-btn" id="crm-refresh">Atualizar dados</button><button type="button" class="link-btn" id="crm-export">Exportar lista (Excel)</button><button type="button" class="link-btn" id="crm-logout">Sair</button></div>
       <div class="agenda" id="agenda"></div>
       <div class="stage-cards" id="stage-cards"></div>
       <div class="macro" id="macro"></div>
@@ -1092,13 +1109,15 @@ function renderPainel() {
   const base = filtered();
   const count = k => base.filter(c => c.etapa === k).length;
 
-  // Ações e alertas
-  const dues = base.map(c => ({ c, i: dueInfo(c) })).filter(x => x.i && x.i.d <= 7).sort((a, b) => a.i.d - b.i.d);
-  const stales = base.map(c => ({ c, i: staleInfo(c) })).filter(x => x.i).sort((a, b) => b.i.d - a.i.d);
-  const item = (x, extra) => `<li><button type="button" class="ag-item" data-open="${escA(x.c.id)}"><span class="ag-name">${esc(x.c.nome)}</span><span class="ag-sub">${esc(placeOf(x.c))}${extra ? ' · ' + extra : ''}</span><span class="ag-when ${x.i.late ? 'late' : ''}">${esc(x.i.txt)}</span></button></li>`;
-  document.getElementById('agenda').innerHTML = `
-    <div class="block ag-card"><h3>Próximas ações <small>até 7 dias</small></h3>${dues.length ? `<ul class="ag-list">${dues.map(x => item(x, esc(x.c.proxAcao || ''))).join('')}</ul>` : '<p class="empty-chart">Nenhuma ação marcada para os próximos dias.</p>'}</div>
-    <div class="block ag-card ${stales.length ? 'warn' : ''}"><h3>Clientes parados <small>negociação há mais de 7 dias, demais há mais de 15</small></h3>${stales.length ? `<ul class="ag-list">${stales.map(x => item({ c: x.c, i: { txt: x.i.txt, late: x.c.etapa === 'negociacao' } }, stageOf(x.c.etapa).n)).join('')}</ul>` : '<p class="empty-chart">Nenhum cliente parado.</p>'}</div>`;
+  // Próximas ações (inclui clientes parados que precisam de contato)
+  const acts = [];
+  base.forEach(c => {
+    const d = dueInfo(c), s = staleInfo(c);
+    if (d && d.d <= 7) acts.push({ c, sort: d.d, when: d.txt, late: d.late, sub: c.proxAcao || 'Próxima ação' });
+    else if (s) acts.push({ c, sort: -1000 + -s.d, when: c.etapa === 'negociacao' ? 'Entrar em contato' : 'Sem movimentação', late: true, sub: s.txt });
+  });
+  acts.sort((x, y) => x.sort - y.sort);
+  document.getElementById('agenda').innerHTML = `<div class="block ag-card"><h3>Próximas ações <small>até 7 dias e clientes parados</small></h3>${acts.length ? `<ul class="ag-list">${acts.map(x => `<li><button type="button" class="ag-item" data-open="${escA(x.c.id)}"><span class="ag-name">${esc(x.c.nome)}</span><span class="ag-sub">${esc(placeOf(x.c))} · ${esc(x.sub)}</span><span class="ag-when ${x.late ? 'late' : ''}">${esc(x.when)}</span></button></li>`).join('')}</ul>` : '<p class="empty-chart">Nenhuma atividade programada</p>'}</div>`;
 
   // Cards de etapa
   document.getElementById('stage-cards').innerHTML = STAGES.map(s => `<button type="button" class="stage-card ${pf.stage === s.k ? 'on' : ''}" data-stage="${s.k}" style="--c:${s.c}" aria-pressed="${pf.stage === s.k}"><b>${crmReady ? count(s.k) : '—'}</b><span>${s.n}</span></button>`).join('');
@@ -1109,14 +1128,15 @@ function renderPainel() {
   const sum = list => list.reduce((a, c) => a + (c.valor || 0), 0);
   document.getElementById('macro').innerHTML = `
     <div class="mc"><span>Clientes no filtro</span><b>${total}</b></div>
-    <div class="mc"><span>Valor em negociação</span><b>${money(sum(base.filter(c => ACTIVE.includes(c.etapa))))}</b></div>
+    <div class="mc"><span>Máquinas em negociação</span><b>${base.filter(c => ACTIVE.includes(c.etapa)).length}</b></div>
     <div class="mc"><span>Valor vendido</span><b>${money(sum(base.filter(c => c.etapa === 'venda')))}</b></div>
-    <div class="mc"><span>Conversão em venda</span><b>${pct(vendas, total)}</b></div>
-    <div class="mc"><span>Desistência</span><b>${pct(des, total)}</b></div>`;
+    <div class="mc"><span>Quantidade de vendas</span><b>${vendas}</b></div>
+    <div class="mc"><span>Conversão em venda</span><b>${pct(vendas, total)}</b></div>`;
 
   // Gráficos
-  const rows = STAGES.map(s => ({ n: s.n, c: s.c, v: count(s.k) }));
-  document.getElementById('chart-funnel').innerHTML = hbars(rows, Math.max(1, ...rows.map(r => r.v)));
+  const rows = STAGES.map(s => ({ n: s.n, c: s.c, v: count(s.k), k: s.k }));
+  const fmax = Math.max(1, ...rows.map(r => r.v));
+  document.getElementById('chart-funnel').innerHTML = rows.map(r => `<button type="button" class="hbar hbtn ${pf.stage === r.k ? 'on' : ''}" data-stage="${r.k}" style="--c:${r.c}" aria-pressed="${pf.stage === r.k}"><span>${esc(r.n)}</span><span class="track"><span class="fill" style="width:${r.v / fmax * 100}%"></span></span><b>${r.v}</b></button>`).join('');
   const byCity = MAP.cities.map(c => ({ n: c.name, c: '#37634c', v: base.filter(x => x.cidadeId === c.id).length })).filter(r => r.v).sort((a, b) => b.v - a.v);
   document.getElementById('chart-city').innerHTML = hbars(byCity, Math.max(1, ...byCity.map(r => r.v)));
   const byMot = MOTIVOS.map(m => ({ n: m, c: '#8a8f8b', v: base.filter(c => c.etapa === 'desistencia' && c.motivoDesistencia === m).length })).filter(r => r.v).sort((a, b) => b.v - a.v);
@@ -1145,6 +1165,7 @@ function renderPainel() {
 }
 ['pf-city', 'pf-resp', 'pf-period'].forEach(id => document.getElementById(id).addEventListener('change', e => { pf[{ 'pf-city': 'city', 'pf-resp': 'resp', 'pf-period': 'period' }[id]] = e.target.value; renderPainel(); }));
 document.getElementById('pf-q').addEventListener('input', e => { pf.q = e.target.value; renderPainel(); });
+document.getElementById('chart-funnel').addEventListener('click', e => { const b = e.target.closest('[data-stage]'); if (!b) return; pf.stage = pf.stage === b.dataset.stage ? '' : b.dataset.stage; renderPainel(); document.getElementById('list-title').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 document.getElementById('stage-cards').addEventListener('click', e => { const b = e.target.closest('[data-stage]'); if (!b) return; pf.stage = pf.stage === b.dataset.stage ? '' : b.dataset.stage; renderPainel(); });
 document.querySelectorAll('[data-view-mode]').forEach(b => b.addEventListener('click', () => { pf.view = b.dataset.viewMode; try { localStorage.setItem('crm-view', pf.view); } catch (e) {} renderPainel(); }));
 const openRow = e => { const r = e.target.closest('tr[data-id]'); if (r) openClient(r.dataset.id); };
@@ -1377,7 +1398,7 @@ const showLogin = msg => {
   crmReady = false; clientes = []; renderCityCrm();
   document.body.classList.add('locked'); gate.hidden = false;
   const hl = document.querySelectorAll('.mast .brands img');
-  document.getElementById('gate-card').innerHTML = `<div class="brands"><img src="${hl[0].src}" alt="Select Máquinas Agrícolas"><span class="sep" aria-hidden="true"></span><img class="ks" src="${hl[1].src}" alt="KS Pulverizadores"></div><h1>Plano Diretor da Parceria</h1><p>Digite seu nome e a senha de acesso. O nome fica registrado no histórico de cada movimentação que você fizer.</p>
+  document.getElementById('gate-card').innerHTML = `<div class="brands"><img src="${hl[0].src}" alt="Select Máquinas Agrícolas"><span class="sep" aria-hidden="true"></span><img class="ks" src="${hl[1].src}" alt="KS Pulverizadores"></div><h1>Plano Diretor da Parceria</h1><p>Digite seu nome e a senha de acesso.</p>
     <form id="login-form" class="login" novalidate>
       <label class="fld"><span>Seu nome</span><input id="lg-nome" autocomplete="name" value="${escA(store.get('crm-nome'))}" placeholder="Ex.: Nick"></label>
       <label class="fld"><span>Senha de acesso</span><input id="lg-senha" type="password" autocomplete="current-password"></label>
@@ -1410,6 +1431,7 @@ async function entrar() {
 }
 document.getElementById('crm-logout').addEventListener('click', () => { store.clear(); senha = ''; showLogin(); });
 document.getElementById('crm-refresh').addEventListener('click', () => entrar());
+document.querySelector('.user-menu').addEventListener('click', e => { if (e.target.closest('.um-list button')) e.currentTarget.removeAttribute('open'); });
 window.addEventListener('hashchange', () => { if (location.hash === '#painel' && senha) entrar(); });
 
 (() => {
