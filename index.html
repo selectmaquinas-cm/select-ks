@@ -747,6 +747,7 @@ table.inv tbody th { width: 34%; }
         <label class="fld"><span>Responsável</span><select id="pf-resp"></select></label>
         <label class="fld"><span>Período</span><select id="pf-period"></select></label>
         <label class="fld grow"><span>Buscar cliente</span><input id="pf-q" type="search" placeholder="Nome do cliente"></label>
+        <label class="fld"><span>Seu nome (histórico)</span><input id="pf-me" placeholder="Ex.: Nick" autocomplete="name"></label>
         <button type="button" class="btn gray" id="new-client">Novo cliente</button>
       </div>
       <div class="stage-cards" id="stage-cards"></div>
@@ -1344,6 +1345,7 @@ async function safeWrite(fn) {
 
 /* ---- Dados: planilha Google (Apps Script), senha conferida no servidor ---- */
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx2k1zv8nElqvXONRjkuV456RWe-ZlBS1kW2qhmJf3CAUFxCTuEi9IwJETuAvHDYYYV/exec';
+const SHEETS_KEY = 'Senha2026@';
 const GITHUB_PAINEL = 'https://selectmaquinas-cm.github.io/select-ks/#painel';
 const store = {
   get(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } },
@@ -1410,8 +1412,7 @@ async function entrar() {
     gate.hidden = true; document.body.classList.remove('locked');
     applyList(j.clientes);
   } catch (e) {
-    if (e.code === 'senha') { store.clear(); showLogin('Senha incorreta. Confira com o responsável pelo painel.'); }
-    else showLogin('Não foi possível conectar agora. Verifique a internet e tente de novo.');
+    showOff(e.code === 'senha' ? '<h3>Painel indisponível</h3><p>A senha da planilha foi alterada. A página precisa ser atualizada com a senha nova.</p>' : '<h3>Não foi possível carregar os clientes</h3><p>Verifique a internet e recarregue a página.</p>');
   }
 }
 window.addEventListener('hashchange', () => { if (location.hash === '#painel' && senha) entrar(); });
@@ -1425,8 +1426,12 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && se
     crmDisabled = true; renderCityCrm(); return;
   }
   if (!/^https:\/\/script\.google\.com\//.test(SHEETS_URL)) { showOff('<h3>Painel em configuração</h3><p>A planilha de clientes ainda não foi ligada a esta página.</p>'); return; }
-  me = store.get('crm-nome'); senha = store.get('crm-senha');
-  if (me && senha) entrar(); else showLogin();
+  senha = SHEETS_KEY;
+  me = store.get('crm-nome');
+  const meIn = document.getElementById('pf-me');
+  meIn.value = me;
+  meIn.addEventListener('change', () => { me = meIn.value.trim(); store.set('crm-nome', me, true); });
+  entrar();
 })();
 
 
