@@ -290,7 +290,7 @@ button.btn { border: 0; cursor: pointer; }
 .btn.ghost-sm:hover { background: var(--tint); }
 .btn.danger { background: #b3361b; }
 .btn.small { padding: 8px 16px; font-size: 14px; }
-.stage-cards { display: grid; gap: 10px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.stage-cards { display: grid; gap: 10px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .stage-card { text-align: left; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--c, var(--green)); border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; font: inherit; color: var(--fg); }
 .stage-card b { font-family: var(--font-display); font-size: 28px; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .stage-card span { font-size: 13px; color: var(--muted); }
@@ -970,6 +970,7 @@ const STAGES = [
   { k: 'contato', n: 'Primeiro contato', c: '#7cb8ea' },
   { k: 'visita', n: 'Visita', c: '#e2b600' },
   { k: 'negociacao', n: 'Negociação', c: '#2459b3' },
+  { k: 'espera', n: 'Em espera', c: '#8e6bbf' },
   { k: 'venda', n: 'Venda', c: '#2f9d55' },
   { k: 'desistencia', n: 'Desistência', c: '#8a8f8b' },
 ];
@@ -1021,6 +1022,7 @@ const staleInfo = c => {
   if (d <= STALE_DAYS[c.etapa]) return null;
   return { d, txt: c.etapa === 'negociacao' ? `Parado em negociação há ${d} dias · entrar em contato` : `Sem movimentação há ${d} dias` };
 };
+const esperaDesde = c => { const h = [...c.historico].reverse().find(x => x.etapa === 'espera' && !x.acao); return h ? h.data : ''; };
 const dueInfo = c => {
   if (!c.proxData || !ACTIVE.includes(c.etapa)) return null;
   const d = daysBetween(today(), c.proxData);
@@ -1152,15 +1154,15 @@ function renderPainel() {
   listBox.hidden = pf.view !== 'lista'; kanBox.hidden = pf.view !== 'colunas';
   if (!crmReady) { document.getElementById('crm-rows').innerHTML = '<tr><td colspan="6" class="note">Carregando clientes…</td></tr>'; return; }
   const alertCell = c => { const s = staleInfo(c), d = dueInfo(c); return s ? `<span class="alert">${esc(s.txt)}</span>` : d && d.late ? `<span class="alert">Ação atrasada</span>` : ''; };
-  document.getElementById('crm-rows').innerHTML = list.length ? list.map(c => `<tr data-id="${escA(c.id)}" tabindex="0" class="${staleInfo(c) ? 'stale' : ''}"><th scope="row">${esc(c.nome)}${c.responsavel ? `<small>${esc(c.responsavel)}</small>` : ''}</th><td>${esc(placeOf(c))}</td><td>${stPill(c.etapa)}</td><td>${money(c.valor)}</td><td>${c.proxAcao || c.proxData ? `${esc(c.proxAcao || '')}<small>${br(c.proxData)}</small>` : '—'}</td><td>${alertCell(c)}</td></tr>`).join('')
+  document.getElementById('crm-rows').innerHTML = list.length ? list.map(c => `<tr data-id="${escA(c.id)}" tabindex="0" class="${staleInfo(c) ? 'stale' : ''}"><th scope="row">${esc(c.nome)}${c.responsavel ? `<small>${esc(c.responsavel)}</small>` : ''}</th><td>${esc(placeOf(c))}</td><td>${stPill(c.etapa)}</td><td>${money(c.valor)}</td><td>${c.etapa === 'espera' ? `Em espera<small>desde ${br(esperaDesde(c))}</small>` : c.proxAcao || c.proxData ? `${esc(c.proxAcao || '')}<small>${br(c.proxData)}</small>` : '—'}</td><td>${alertCell(c)}</td></tr>`).join('')
     : `<tr><td colspan="6" class="note">Nenhum cliente neste filtro. Use “Novo cliente” para cadastrar.</td></tr>`;
   const cols = pf.stage && pf.stage !== 'parados' ? STAGES.filter(s => s.k === pf.stage) : STAGES;
   kanBox.innerHTML = cols.map(s => {
     const cs = list.filter(c => c.etapa === s.k);
-    const next = FLOW[FLOW.indexOf(s.k) + 1];
+    const next = s.k === 'espera' ? 'negociacao' : FLOW[FLOW.indexOf(s.k) + 1];
     return `<div class="kcol" style="--c:${s.c}"><h4>${s.n}<span>${cs.length}</span></h4>${cs.map(c => `
-      <div class="kcard ${staleInfo(c) ? 'stale' : ''}"><button type="button" class="kopen" data-open="${escA(c.id)}"><b>${esc(c.nome)}</b><span>${esc(placeOf(c))}</span>${c.valor ? `<span>${money(c.valor)}</span>` : ''}${c.proxData ? `<span class="${(dueInfo(c) || {}).late ? 'late' : ''}">${esc(c.proxAcao || 'Próxima ação')} · ${br(c.proxData)}</span>` : ''}${staleInfo(c) ? `<span class="alert">${esc(staleInfo(c).txt)}</span>` : ''}</button>
-      ${next ? `<button type="button" class="kadv" data-adv="${escA(c.id)}" data-to="${next}">Avançar para ${stageOf(next).n} →</button>` : ''}</div>`).join('') || '<p class="kempty">Nenhum cliente</p>'}</div>`;
+      <div class="kcard ${staleInfo(c) ? 'stale' : ''}"><button type="button" class="kopen" data-open="${escA(c.id)}"><b>${esc(c.nome)}</b><span>${esc(placeOf(c))}</span>${c.etapa === 'espera' ? `<span>Contato em ${br(esperaDesde(c))}</span>` : ''}${c.valor ? `<span>${money(c.valor)}</span>` : ''}${c.proxData ? `<span class="${(dueInfo(c) || {}).late ? 'late' : ''}">${esc(c.proxAcao || 'Próxima ação')} · ${br(c.proxData)}</span>` : ''}${staleInfo(c) ? `<span class="alert">${esc(staleInfo(c).txt)}</span>` : ''}</button>
+      ${next ? `<button type="button" class="kadv" data-adv="${escA(c.id)}" data-to="${next}">${s.k === 'espera' ? 'Retomar em' : 'Avançar para'} ${stageOf(next).n} →</button>` : ''}</div>`).join('') || '<p class="kempty">Nenhum cliente</p>'}</div>`;
   }).join('');
 }
 ['pf-city', 'pf-resp', 'pf-period'].forEach(id => document.getElementById(id).addEventListener('change', e => { pf[{ 'pf-city': 'city', 'pf-resp': 'resp', 'pf-period': 'period' }[id]] = e.target.value; renderPainel(); }));
