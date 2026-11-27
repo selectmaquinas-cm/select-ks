@@ -477,6 +477,36 @@ table.inv tbody th { width: 34%; }
   .brands img { height: 40px; } .brands .ks { height: 48px; }
   .brands .sep { display: none; }
 }
+/* Celular */
+@media (max-width: 600px) {
+  .actions { gap: 8px; }
+  .actions .btn { padding: 8px 14px; font-size: 14px; gap: 6px; }
+  .actions .btn svg { width: 15px; height: 15px; }
+  .crm-bar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .crm-bar .fld.grow { grid-column: 1 / -1; order: 9; }
+  .crm-bar .fld select, .crm-bar .fld input { font-size: 14px; padding: 8px 10px; }
+  .stage-cards { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px; }
+  .stage-card { padding: 8px 10px; border-top-width: 3px; }
+  .stage-card b { font-size: 22px; }
+  .stage-card span { font-size: 11.5px; line-height: 1.2; }
+  .macro { gap: 8px; }
+  .macro > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .crm-table, .crm-table tbody { display: block; width: 100%; min-width: 0 !important; }
+  .crm-table thead { display: none; }
+  .crm-table tbody tr { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; padding: 12px 4px; border-bottom: 1px solid var(--line); align-items: center; }
+  .crm-table tbody th, .crm-table tbody td { padding: 0 !important; border: 0 !important; background: none !important; text-align: left; white-space: normal; width: auto !important; max-width: none !important; }
+  .crm-table tbody th { grid-column: 1; grid-row: 1; font-size: 15px; }
+  .crm-table tbody td:nth-child(3) { grid-column: 2; grid-row: 1; justify-self: end; }
+  .crm-table tbody td:nth-child(2) { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+  .crm-table tbody td:nth-child(4) { display: none; }
+  .crm-table tbody td:nth-child(5) { grid-column: 1 / -1; font-size: 13px; }
+  .crm-table tbody td:nth-child(5) small { display: inline; margin-left: 6px; }
+  .crm-table tbody td:nth-child(6) { grid-column: 1 / -1; }
+  .crm-table tbody td:nth-child(6):empty { display: none; }
+  .crm-table tbody td.note { grid-column: 1 / -1; }
+  .crm-table tbody tr:hover th, .crm-table tbody tr:hover td { background: none !important; }
+  .list-head { padding-top: 6px; }
+}
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -1156,7 +1186,7 @@ function renderPainel() {
   listBox.hidden = pf.view !== 'lista'; kanBox.hidden = pf.view !== 'colunas';
   if (!crmReady) { document.getElementById('crm-rows').innerHTML = '<tr><td colspan="6" class="note">Carregando clientes…</td></tr>'; return; }
   const alertCell = c => { const s = staleInfo(c), d = dueInfo(c); return s ? `<span class="alert">${esc(s.txt)}</span>` : d && d.late ? `<span class="alert">Ação atrasada</span>` : ''; };
-  document.getElementById('crm-rows').innerHTML = list.length ? list.map(c => `<tr data-id="${escA(c.id)}" tabindex="0" class="${staleInfo(c) ? 'stale' : ''}"><th scope="row">${esc(c.nome)}${c.responsavel ? `<small>${esc(c.responsavel)}</small>` : ''}</th><td>${esc(placeOf(c))}</td><td>${stPill(c.etapa)}</td><td>${money(c.valor)}</td><td>${c.etapa === 'espera' ? `Em espera<small>desde ${br(esperaDesde(c))}</small>` : c.proxAcao || c.proxData ? `${esc(c.proxAcao || '')}<small>${br(c.proxData)}</small>` : '—'}</td><td>${alertCell(c)}</td></tr>`).join('')
+  document.getElementById('crm-rows').innerHTML = list.length ? list.map(c => `<tr data-id="${escA(c.id)}" tabindex="0" class="${staleInfo(c) ? 'stale' : ''}"><th scope="row">${esc(c.nome)}${c.responsavel ? `<small>${esc(c.responsavel)}</small>` : ''}</th><td>${esc(placeOf(c))}</td><td>${stPill(c.etapa)}</td><td>${money(c.valor)}</td><td>${c.etapa === 'espera' ? `Em espera<small>desde ${br(esperaDesde(c))}</small>` : c.proxAcao || c.proxData ? `${esc(c.proxAcao || '')}${c.proxData ? `<small>${br(c.proxData)}</small>` : ''}` : '—'}</td><td>${alertCell(c)}</td></tr>`).join('')
     : `<tr><td colspan="6" class="note">Nenhum cliente neste filtro. Use “Novo cliente” para cadastrar.</td></tr>`;
   const cols = pf.stage && pf.stage !== 'parados' ? STAGES.filter(s => s.k === pf.stage) : STAGES;
   kanBox.innerHTML = cols.map(s => {
