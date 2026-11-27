@@ -309,7 +309,7 @@ button.btn { border: 0; cursor: pointer; }
 .hbtn .track { display: block; } .hbtn .fill { display: block; }
 .hbtn:focus-visible { outline: 3px solid var(--orange); }
 .empty-chart { color: var(--muted); font-size: 14px; }
-.list-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0 4px; flex-wrap: wrap; }
+.list-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0 4px; flex-wrap: wrap; }
 .crm-table tbody tr { cursor: pointer; }
 .crm-table tbody tr:hover th, .crm-table tbody tr:hover td { background: var(--tint); }
 .crm-table td small { display: block; color: var(--muted); font-size: 12px; }
@@ -390,6 +390,10 @@ button.btn { border: 0; cursor: pointer; }
 .urow { display: grid; grid-template-columns: minmax(0, 1fr) 80px 120px 28px; gap: 6px; margin-bottom: 6px; }
 .urow input { font: 14px var(--font-body); color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; min-width: 0; }
 .list-head .seg button { padding: 5px 12px; }
+.lh-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mini-btn { font: 600 13px var(--font-display); background: transparent; color: var(--green-dark); border: 1.5px solid var(--green); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.mini-btn:hover { background: var(--green); color: var(--on-green); }
+.mini-btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr); gap: 12px; overflow-x: auto; padding: 8px 0 14px; }
 .kcol { background: var(--tint); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; border-top: 4px solid var(--c); min-width: 0; }
 .kcol h4 { margin: 0; font: 600 14px var(--font-display); display: flex; justify-content: space-between; color: var(--fg); }
@@ -714,7 +718,6 @@ table.inv tbody th { width: 34%; }
       <img class="ks plan-ks" alt="KS Pulverizadores">
     </div>
     <h1>Painel de Clientes</h1>
-    <p>Acompanhe a captação de clientes em cada etapa da venda.</p>
     <div class="actions">
       <a class="btn" href="#plano">
         Metas
@@ -748,7 +751,6 @@ table.inv tbody th { width: 34%; }
         <label class="fld"><span>Período</span><select id="pf-period"></select></label>
         <label class="fld grow"><span>Buscar cliente</span><input id="pf-q" type="search" placeholder="Nome do cliente"></label>
         <label class="fld"><span>Seu nome (histórico)</span><input id="pf-me" placeholder="Ex.: Nick" autocomplete="name"></label>
-        <button type="button" class="btn gray" id="new-client">Novo cliente</button>
       </div>
       <div class="stage-cards" id="stage-cards"></div>
       <div class="macro" id="macro"></div>
@@ -759,7 +761,7 @@ table.inv tbody th { width: 34%; }
       </div>
       <div class="agenda" id="agenda"></div>
       <div class="block inv-card">
-        <div class="list-head"><h3 id="list-title">Todos os clientes</h3><div class="seg" role="group" aria-label="Forma de exibição"><button type="button" data-view-mode="lista">Lista</button><button type="button" data-view-mode="colunas">Colunas</button></div></div>
+        <div class="list-head"><div class="lh-left"><h3 id="list-title">Todos os clientes</h3><button type="button" class="mini-btn" id="new-client">+ Novo cliente</button></div><div class="seg" role="group" aria-label="Forma de exibição"><button type="button" data-view-mode="lista">Lista</button><button type="button" data-view-mode="colunas">Colunas</button></div></div>
         <div class="inv-scroll" id="crm-list"><table class="inv crm-table"><thead><tr><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Etapa</th><th scope="col">Valor</th><th scope="col">Próxima ação</th><th scope="col">Alerta</th></tr></thead><tbody id="crm-rows"></tbody></table></div>
         <div class="kanban" id="crm-kanban" hidden></div>
       </div>
@@ -970,8 +972,8 @@ const STAGES = [
   { k: 'contato', n: 'Primeiro contato', c: '#7cb8ea' },
   { k: 'visita', n: 'Visita', c: '#e2b600' },
   { k: 'negociacao', n: 'Negociação', c: '#2459b3' },
-  { k: 'espera', n: 'Em espera', c: '#8e6bbf' },
   { k: 'venda', n: 'Venda', c: '#2f9d55' },
+  { k: 'espera', n: 'Em espera', c: '#8e6bbf' },
   { k: 'desistencia', n: 'Desistência', c: '#8a8f8b' },
 ];
 const FLOW = ['contato', 'visita', 'negociacao', 'venda'];
