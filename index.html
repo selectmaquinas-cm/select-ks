@@ -506,6 +506,7 @@ table.inv tbody th { width: 34%; }
 .vlist span { color: var(--muted); font-size: 13px; }
 .visit-reg { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
 .visit-reg input { font: 14px var(--font-body); border: 1.5px solid var(--line); border-radius: 10px; padding: 5px 8px; background: var(--surface); color: var(--fg); }
+.vhint { font-size: 13px; color: var(--muted); margin: 0; text-align: center; }
 .vlist-h { font: 600 14px var(--font-display); color: var(--green-dark); margin: 4px 0 2px; }
 /* Celular */
 @media (max-width: 600px) {
@@ -819,7 +820,7 @@ table.inv tbody th { width: 34%; }
       </div>
       <div class="stage-cards" id="stage-cards"></div>
       <div class="macro" id="macro"></div>
-      <div class="block chart-card visits-card"><div class="vc-head"><h3>Visitas realizadas por mês</h3><span class="note" id="visits-sub"></span></div><div class="vbars" id="visits-bars"></div><div id="visits-list"></div></div>
+      <div class="block chart-card visits-card"><div class="vc-head"><h3>Contato com clientes</h3><span class="note" id="visits-sub"></span></div><div class="vbars" id="visits-bars"></div><div id="visits-list"></div></div>
       <div class="crm-charts">
         <div class="block chart-card"><h3>Funil de vendas</h3><div id="chart-funnel"></div></div>
         <div class="block chart-card"><h3>Clientes por cidade</h3><div id="chart-city"></div></div>
@@ -1176,12 +1177,13 @@ let visitMonth = null;
 const visitsOf = list => list.flatMap(c => c.historico.filter(h => h.visita && h.data).map(h => ({ c, h })));
 function renderVisits(list) {
   const now = new Date(), y = now.getFullYear(), curM = now.getMonth();
-  if (visitMonth === null) visitMonth = curM;
   const all = visitsOf(list).filter(v => v.h.data.slice(0, 4) === String(y));
   const per = MESES.map((_, i) => all.filter(v => +v.h.data.slice(5, 7) === i + 1));
   const max = Math.max(1, ...per.map(p => p.length));
   document.getElementById('visits-sub').textContent = `${y} · ${all.length} no ano · ${per[curM].length} em ${MESES_L[curM]}`;
   document.getElementById('visits-bars').innerHTML = per.map((p, i) => `<button type="button" class="vbar ${i === curM ? 'cur' : ''} ${i === visitMonth ? 'on' : ''}" data-vm="${i}" aria-pressed="${i === visitMonth}" aria-label="${MESES_L[i]}: ${p.length} visitas"><b>${p.length || ''}</b><i style="height:${p.length / max * 100}%"></i><small>${MESES[i]}</small></button>`).join('');
+  const box = document.getElementById('visits-list');
+  if (visitMonth === null) { box.innerHTML = '<p class="vhint">Clique em um mês para ver os clientes visitados.</p>'; return; }
   const sel = per[visitMonth].slice().sort((a, b) => (b.h.data + (b.h.hora || '')).localeCompare(a.h.data + (a.h.hora || '')));
   document.getElementById('visits-list').innerHTML = `<p class="vlist-h">Visitas em ${MESES_L[visitMonth]}: ${sel.length}</p>` + (sel.length
     ? sel.reduce((acc, v) => { const g = acc.find(x => x.d === v.h.data); g ? g.v.push(v) : acc.push({ d: v.h.data, v: [v] }); return acc; }, []).map(g => {
@@ -1191,7 +1193,7 @@ function renderVisits(list) {
       }).join('')
     : '<p class="empty-chart">Nenhuma visita registrada neste mês.</p>');
 }
-document.getElementById('visits-bars').addEventListener('click', e => { const b = e.target.closest('[data-vm]'); if (!b) return; visitMonth = +b.dataset.vm; renderVisits(filtered()); });
+document.getElementById('visits-bars').addEventListener('click', e => { const b = e.target.closest('[data-vm]'); if (!b) return; visitMonth = visitMonth === +b.dataset.vm ? null : +b.dataset.vm; renderVisits(filtered()); });
 document.getElementById('visits-list').addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) openClient(b.dataset.open); });
 
 /* ---- Painel ---- */
