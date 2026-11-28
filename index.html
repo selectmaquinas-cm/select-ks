@@ -392,6 +392,8 @@ button.btn { border: 0; cursor: pointer; }
 .list-head .seg button { padding: 5px 12px; }
 .lh-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .mini-btn { font: 600 13px var(--font-display); background: transparent; color: var(--green-dark); border: 1.5px solid var(--green); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.q-in { font: 14px var(--font-body); color: var(--fg); background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; padding: 5px 12px; width: 200px; max-width: 100%; }
+.q-in:focus { outline: none; border-color: var(--green); }
 .mini-btn:hover { background: var(--green); color: var(--on-green); }
 .mini-btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 .kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(180px, 1fr); gap: 12px; overflow-x: auto; padding: 8px 0 14px; }
@@ -514,7 +516,7 @@ table.inv tbody th { width: 34%; }
   .actions .btn { padding: 8px 14px; font-size: 14px; gap: 6px; }
   .actions .btn svg { width: 15px; height: 15px; }
   .crm-bar { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .crm-bar .fld.grow { grid-column: 1 / -1; order: 9; }
+  .q-in { flex: 1 1 140px; width: auto; }
   .crm-bar .fld select, .crm-bar .fld input { font-size: 14px; padding: 8px 10px; }
   .stage-cards { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px; }
   .stage-card { padding: 8px 10px; border-top-width: 3px; }
@@ -813,10 +815,7 @@ table.inv tbody th { width: 34%; }
     <div class="crm" id="crm">
       <div class="crm-bar">
         <label class="fld"><span>Cidade</span><select id="pf-city"></select></label>
-        <label class="fld"><span>Responsável</span><select id="pf-resp"></select></label>
         <label class="fld"><span>Período</span><select id="pf-period"></select></label>
-        <label class="fld grow"><span>Buscar cliente</span><input id="pf-q" type="search" placeholder="Nome do cliente"></label>
-        <label class="fld"><span>Seu nome (histórico)</span><input id="pf-me" placeholder="Ex.: Nick" autocomplete="name"></label>
       </div>
       <div class="stage-cards" id="stage-cards"></div>
       <div class="macro" id="macro"></div>
@@ -828,7 +827,7 @@ table.inv tbody th { width: 34%; }
       </div>
       <div class="agenda" id="agenda"></div>
       <div class="block inv-card">
-        <div class="list-head"><div class="lh-left"><h3 id="list-title">Todos os clientes</h3><button type="button" class="mini-btn" id="new-client">+ Novo cliente</button></div><div class="seg" role="group" aria-label="Forma de exibição"><button type="button" data-view-mode="lista">Lista</button><button type="button" data-view-mode="colunas">Colunas</button></div></div>
+        <div class="list-head"><div class="lh-left"><h3 id="list-title">Todos os clientes</h3><button type="button" class="mini-btn" id="new-client">+ Novo cliente</button><input id="pf-q" class="q-in" type="search" placeholder="Buscar cliente" aria-label="Buscar cliente"></div><div class="seg" role="group" aria-label="Forma de exibição"><button type="button" data-view-mode="lista">Lista</button><button type="button" data-view-mode="colunas">Colunas</button></div></div>
         <div class="inv-scroll" id="crm-list"><table class="inv crm-table"><thead><tr><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Etapa</th><th scope="col">Valor</th><th scope="col">Próxima ação</th><th scope="col">Alerta</th></tr></thead><tbody id="crm-rows"></tbody></table></div>
         <div class="kanban" id="crm-kanban" hidden></div>
       </div>
@@ -1200,10 +1199,8 @@ document.getElementById('visits-list').addEventListener('click', e => { const b 
 function renderPainel() {
   const sel = (id, opts, val) => { document.getElementById(id).innerHTML = opts.map(([v, l]) => `<option value="${escA(v)}" ${v === val ? 'selected' : ''}>${esc(l)}</option>`).join(''); };
   sel('pf-city', [['', 'Todas as cidades'], ...MAP.cities.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).map(c => [c.id, c.name]), ...EXTRA_CITIES.map(c => [c.id, c.name + ' (fora)'])], pf.city);
-  const resps = [...new Set(clientes.map(c => c.responsavel).filter(Boolean))].sort();
-  sel('pf-resp', [['', 'Todos'], ...(me ? [[me, 'Meus clientes']] : []), ...resps.filter(r => r !== me).map(r => [r, r]), ['__none', 'Sem responsável']], pf.resp);
   sel('pf-period', [['', 'Todo o período'], ['mes', 'Este mês'], ['tri', 'Este trimestre'], ['ano', 'Este ano']], pf.period);
-  document.getElementById('pf-q').value = pf.q;
+  const qIn = document.getElementById('pf-q'); if (qIn.value !== pf.q) qIn.value = pf.q;
   document.querySelectorAll('[data-view-mode]').forEach(b => b.classList.toggle('on', b.dataset.viewMode === pf.view));
 
   const base = filtered();
@@ -1264,7 +1261,7 @@ function renderPainel() {
       ${next ? `<button type="button" class="kadv" data-adv="${escA(c.id)}" data-to="${next}">${s.k === 'espera' ? 'Retomar em' : 'Avançar para'} ${stageOf(next).n} →</button>` : ''}</div>`).join('') || '<p class="kempty">Nenhum cliente</p>'}</div>`;
   }).join('');
 }
-['pf-city', 'pf-resp', 'pf-period'].forEach(id => document.getElementById(id).addEventListener('change', e => { pf[{ 'pf-city': 'city', 'pf-resp': 'resp', 'pf-period': 'period' }[id]] = e.target.value; renderPainel(); }));
+['pf-city', 'pf-period'].forEach(id => document.getElementById(id).addEventListener('change', e => { pf[{ 'pf-city': 'city', 'pf-period': 'period' }[id]] = e.target.value; renderPainel(); }));
 document.getElementById('pf-q').addEventListener('input', e => { pf.q = e.target.value; renderPainel(); });
 document.getElementById('chart-funnel').addEventListener('click', e => { const b = e.target.closest('[data-stage]'); if (!b) return; pf.stage = pf.stage === b.dataset.stage ? '' : b.dataset.stage; renderPainel(); document.getElementById('list-title').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 document.getElementById('stage-cards').addEventListener('click', e => { const b = e.target.closest('[data-stage]'); if (!b) return; pf.stage = pf.stage === b.dataset.stage ? '' : b.dataset.stage; renderPainel(); });
@@ -1536,9 +1533,6 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && se
   if (!/^https:\/\/script\.google\.com\//.test(SHEETS_URL)) { showOff('<h3>Painel em configuração</h3><p>A planilha de clientes ainda não foi ligada a esta página.</p>'); return; }
   senha = SHEETS_KEY;
   me = store.get('crm-nome');
-  const meIn = document.getElementById('pf-me');
-  meIn.value = me;
-  meIn.addEventListener('change', () => { me = meIn.value.trim(); store.set('crm-nome', me, true); });
   entrar();
 })();
 
