@@ -477,6 +477,36 @@ table.inv tbody th { width: 34%; }
   .brands img { height: 40px; } .brands .ks { height: 48px; }
   .brands .sep { display: none; }
 }
+.visits-card { gap: 12px; }
+.vc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.vc-head .note { font-size: 13px; color: var(--muted); }
+.vbars { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px; align-items: end; height: 150px; }
+.vbar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: var(--muted); min-width: 0; }
+.vbar b { font: 600 13px var(--font-display); color: var(--fg); font-variant-numeric: tabular-nums; }
+.vbar i { display: block; width: 100%; max-width: 38px; border-radius: 6px 6px 2px 2px; background: color-mix(in srgb, var(--green) 35%, var(--surface)); min-height: 3px; }
+.vbar small { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.vbar.cur i { background: var(--green); }
+.vbar.on i { background: var(--orange); }
+.vbar.on small { color: var(--fg); font-weight: 700; }
+.vbar:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; border-radius: 6px; }
+.vday { border-top: 1px solid var(--line); padding: 10px 0; display: flex; flex-direction: column; gap: 6px; }
+.vd-h { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; font-size: 14px; }
+.vd-h time { font: 600 14px var(--font-display); color: var(--fg); font-variant-numeric: tabular-nums; }
+.vd-h time small { color: var(--muted); font-weight: 400; }
+.vd-h b { color: var(--green-dark); }
+.vd-h span { color: var(--muted); font-size: 13px; }
+.vd-names { display: flex; flex-wrap: wrap; gap: 6px; }
+.vd-names button { font: 500 13px var(--font-body); background: var(--tint); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+.vd-names button:hover { border-color: var(--green); }
+.vd-names button:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.vlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.vlist li { display: grid; grid-template-columns: 86px 1fr auto; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; align-items: baseline; }
+.vlist time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.vlist button { background: none; border: 0; padding: 0; font: 600 14px var(--font-body); color: var(--green-dark); cursor: pointer; text-align: left; }
+.vlist span { color: var(--muted); font-size: 13px; }
+.visit-reg { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+.visit-reg input { font: 14px var(--font-body); border: 1.5px solid var(--line); border-radius: 10px; padding: 5px 8px; background: var(--surface); color: var(--fg); }
+.vlist-h { font: 600 14px var(--font-display); color: var(--green-dark); margin: 4px 0 2px; }
 /* Celular */
 @media (max-width: 600px) {
   .actions { gap: 8px; }
@@ -506,6 +536,11 @@ table.inv tbody th { width: 34%; }
   .crm-table tbody td.note { grid-column: 1 / -1; }
   .crm-table tbody tr:hover th, .crm-table tbody tr:hover td { background: none !important; }
   .list-head { padding-top: 6px; }
+  .vbars { gap: 3px; height: 130px; }
+  .vbar small { font-size: 9.5px; letter-spacing: 0; }
+  .vbar b { font-size: 12px; }
+  .vlist li { grid-template-columns: 70px 1fr; }
+  .vlist li span { grid-column: 2; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -784,6 +819,7 @@ table.inv tbody th { width: 34%; }
       </div>
       <div class="stage-cards" id="stage-cards"></div>
       <div class="macro" id="macro"></div>
+      <div class="block chart-card visits-card"><div class="vc-head"><h3>Visitas realizadas por mês</h3><span class="note" id="visits-sub"></span></div><div class="vbars" id="visits-bars"></div><div id="visits-list"></div></div>
       <div class="crm-charts">
         <div class="block chart-card"><h3>Funil de vendas</h3><div id="chart-funnel"></div></div>
         <div class="block chart-card"><h3>Clientes por cidade</h3><div id="chart-city"></div></div>
@@ -1027,15 +1063,18 @@ const parseMoney = s => {
   const n = parseFloat(s);
   return isFinite(n) ? Math.round(n) : 0;
 };
+const EXTRA_CITIES = [{ id: 'x-jussara', name: 'Jussara' }];
+const ALL_CITIES = [...MAP.cities, ...EXTRA_CITIES];
 const cityOpts = (() => {
   const out = [];
   [...MAP.cities].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).forEach(c => {
     out.push({ v: c.id, label: c.name });
     (DIST[c.name] || []).forEach(d => out.push({ v: c.id + '|' + d, label: `${d} (distrito de ${c.name})` }));
   });
+  EXTRA_CITIES.forEach(c => out.push({ v: c.id, label: `${c.name} (fora do território)` }));
   return out;
 })();
-const cityName = id => (MAP.cities.find(c => c.id === id) || {}).name || '—';
+const cityName = id => (ALL_CITIES.find(c => c.id === id) || {}).name || '—';
 const placeOf = cl => cl.distrito ? `${cl.distrito} · ${cityName(cl.cidadeId)}` : cityName(cl.cidadeId);
 
 const norm = c => ({
@@ -1130,10 +1169,35 @@ function hbars(rows, max, emptyTxt) {
   return rows.map(r => `<div class="hbar" style="--c:${r.c}"><span>${esc(r.n)}</span><div class="track"><div class="fill" style="width:${max ? (r.v / max * 100) : 0}%"></div></div><b>${r.v}</b></div>`).join('');
 }
 
+/* ---- Visitas por mês ---- */
+const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const MESES_L = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+let visitMonth = null;
+const visitsOf = list => list.flatMap(c => c.historico.filter(h => h.visita && h.data).map(h => ({ c, h })));
+function renderVisits(list) {
+  const now = new Date(), y = now.getFullYear(), curM = now.getMonth();
+  if (visitMonth === null) visitMonth = curM;
+  const all = visitsOf(list).filter(v => v.h.data.slice(0, 4) === String(y));
+  const per = MESES.map((_, i) => all.filter(v => +v.h.data.slice(5, 7) === i + 1));
+  const max = Math.max(1, ...per.map(p => p.length));
+  document.getElementById('visits-sub').textContent = `${y} · ${all.length} no ano · ${per[curM].length} em ${MESES_L[curM]}`;
+  document.getElementById('visits-bars').innerHTML = per.map((p, i) => `<button type="button" class="vbar ${i === curM ? 'cur' : ''} ${i === visitMonth ? 'on' : ''}" data-vm="${i}" aria-pressed="${i === visitMonth}" aria-label="${MESES_L[i]}: ${p.length} visitas"><b>${p.length || ''}</b><i style="height:${p.length / max * 100}%"></i><small>${MESES[i]}</small></button>`).join('');
+  const sel = per[visitMonth].slice().sort((a, b) => (b.h.data + (b.h.hora || '')).localeCompare(a.h.data + (a.h.hora || '')));
+  document.getElementById('visits-list').innerHTML = `<p class="vlist-h">Visitas em ${MESES_L[visitMonth]}: ${sel.length}</p>` + (sel.length
+    ? sel.reduce((acc, v) => { const g = acc.find(x => x.d === v.h.data); g ? g.v.push(v) : acc.push({ d: v.h.data, v: [v] }); return acc; }, []).map(g => {
+        const cities = [...new Set(g.v.map(v => cityName(v.c.cidadeId)))].join(', ');
+        const wd = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(g.d + 'T12:00').getDay()];
+        return `<div class="vday"><div class="vd-h"><time>${br(g.d).slice(0, 5)} <small>${wd}</small></time><b>${g.v.length} ${g.v.length > 1 ? 'visitas' : 'visita'}</b><span>${esc(cities)}</span></div><div class="vd-names">${g.v.map(v => `<button type="button" data-open="${escA(v.c.id)}">${esc(v.c.nome)}</button>`).join('')}</div></div>`;
+      }).join('')
+    : '<p class="empty-chart">Nenhuma visita registrada neste mês.</p>');
+}
+document.getElementById('visits-bars').addEventListener('click', e => { const b = e.target.closest('[data-vm]'); if (!b) return; visitMonth = +b.dataset.vm; renderVisits(filtered()); });
+document.getElementById('visits-list').addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (b) openClient(b.dataset.open); });
+
 /* ---- Painel ---- */
 function renderPainel() {
   const sel = (id, opts, val) => { document.getElementById(id).innerHTML = opts.map(([v, l]) => `<option value="${escA(v)}" ${v === val ? 'selected' : ''}>${esc(l)}</option>`).join(''); };
-  sel('pf-city', [['', 'Todas as cidades'], ...MAP.cities.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).map(c => [c.id, c.name])], pf.city);
+  sel('pf-city', [['', 'Todas as cidades'], ...MAP.cities.slice().sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')).map(c => [c.id, c.name]), ...EXTRA_CITIES.map(c => [c.id, c.name + ' (fora)'])], pf.city);
   const resps = [...new Set(clientes.map(c => c.responsavel).filter(Boolean))].sort();
   sel('pf-resp', [['', 'Todos'], ...(me ? [[me, 'Meus clientes']] : []), ...resps.filter(r => r !== me).map(r => [r, r]), ['__none', 'Sem responsável']], pf.resp);
   sel('pf-period', [['', 'Todo o período'], ['mes', 'Este mês'], ['tri', 'Este trimestre'], ['ano', 'Este ano']], pf.period);
@@ -1142,6 +1206,7 @@ function renderPainel() {
 
   const base = filtered();
   const count = k => base.filter(c => c.etapa === k).length;
+  if (crmReady) renderVisits(clientes.filter(c => (!pf.city || c.cidadeId === pf.city) && (!pf.resp || (pf.resp === '__none' ? !c.responsavel : c.responsavel === pf.resp)) && (!pf.q || (c.nome || '').toLowerCase().includes(pf.q.toLowerCase()))));
 
   // Próximas ações (inclui clientes parados que precisam de contato)
   const acts = [];
@@ -1171,9 +1236,9 @@ function renderPainel() {
   const rows = STAGES.map(s => ({ n: s.n, c: s.c, v: count(s.k), k: s.k }));
   const fmax = Math.max(1, ...rows.map(r => r.v));
   document.getElementById('chart-funnel').innerHTML = rows.map(r => `<button type="button" class="hbar hbtn ${pf.stage === r.k ? 'on' : ''}" data-stage="${r.k}" style="--c:${r.c}" aria-pressed="${pf.stage === r.k}"><span>${esc(r.n)}</span><span class="track"><span class="fill" style="width:${r.v / fmax * 100}%"></span></span><b>${r.v}</b></button>`).join('');
-  const byCity = MAP.cities.map(c => ({ n: c.name, c: '#37634c', v: base.filter(x => x.cidadeId === c.id).length })).filter(r => r.v).sort((a, b) => b.v - a.v);
+  const byCity = ALL_CITIES.map(c => ({ n: c.name, c: '#37634c', v: base.filter(x => x.cidadeId === c.id).length })).filter(r => r.v).sort((a, b) => b.v - a.v);
   document.getElementById('chart-city').innerHTML = hbars(byCity, Math.max(1, ...byCity.map(r => r.v)));
-  const byVenda = MAP.cities.map(c => ({ n: c.name, c: stageOf('venda').c, v: base.filter(x => x.cidadeId === c.id && x.etapa === 'venda').length })).filter(r => r.v).sort((a, b) => b.v - a.v);
+  const byVenda = ALL_CITIES.map(c => ({ n: c.name, c: stageOf('venda').c, v: base.filter(x => x.cidadeId === c.id && x.etapa === 'venda').length })).filter(r => r.v).sort((a, b) => b.v - a.v);
   document.getElementById('chart-vendas').innerHTML = hbars(byVenda, Math.max(1, ...byVenda.map(r => r.v)), 'Nenhuma venda registrada.');
 
   // Lista ou colunas
@@ -1231,7 +1296,7 @@ const waLink = t => { let d = digits(t); if (!d) return ''; if (d.length <= 11) 
 
 async function moveTo(c, etapa, nota, motivo) {
   const txt = motivo ? 'Motivo: ' + motivo + (nota ? ' · ' + nota : '') : nota;
-  const patch = { etapa, atualizadoEm: today(), historico: [...c.historico, { etapa, ...stamp(), ...(txt ? { nota: txt } : {}) }] };
+  const patch = { etapa, atualizadoEm: today(), historico: [...c.historico, { etapa, ...stamp(), ...(txt ? { nota: txt } : {}), ...(etapa === 'visita' ? { visita: true } : {}) }] };
   if (etapa === 'desistencia') patch.motivoDesistencia = motivo || '';
   return safeWrite(() => clientesCol.doc(c.id).update(patch));
 }
@@ -1261,6 +1326,7 @@ function openClient(id) {
       ${c.etapa === 'desistencia' && c.motivoDesistencia ? `<dt>Motivo da desistência</dt><dd>${esc(c.motivoDesistencia)}</dd>` : ''}
       <dt>Cadastrado em</dt><dd>${br(c.criadoEm)}</dd>
     </dl>
+    <div class="visit-reg"><button type="button" class="mini-btn" data-act="reg-visit">+ Registrar visita realizada</button><input id="rv-data" type="date" aria-label="Data da visita" value="${today()}"></div>
     <div class="cp-sub">Mover para outra etapa</div>
     <div class="movers">${STAGES.filter(s => s.k !== c.etapa).map(s => `<button type="button" class="mover" style="--c:${s.c}" data-move="${s.k}">${s.n}</button>`).join('')}</div>
     <div class="desist" id="desist" hidden>
@@ -1279,6 +1345,12 @@ function openClient(id) {
     const b = e.target.closest('button'); if (!b) return;
     const act = b.dataset.act;
     if (act === 'close') return closeSheet();
+    if (act === 'reg-visit') {
+      const d = document.getElementById('rv-data').value || today();
+      const hist = [...c.historico, { etapa: c.etapa, acao: 'Visita realizada', visita: true, ...stamp(), data: d }];
+      if (await safeWrite(() => clientesCol.doc(c.id).update({ historico: hist, atualizadoEm: today() }))) openClient(c.id);
+      return;
+    }
     if (act === 'edit') return openForm(c);
     if (act === 'delete') { b.outerHTML = `<span class="note">Excluir ${esc(c.nome)} e todo o histórico?</span><button type="button" class="btn danger small" data-act="confirm-delete">Sim, excluir</button>`; return; }
     if (act === 'confirm-delete') { if (await safeWrite(() => clientesCol.doc(c.id).delete())) closeSheet(); return; }
